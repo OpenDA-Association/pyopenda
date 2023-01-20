@@ -19,21 +19,21 @@ class dud_printer:
     def __init__(self):
         self.iter = 0
 
-    def print(self, str):
+    def print(self, message):
         """
         Print information with iteration info in front
         :param str: String to print
         :return: none
         """
-        print("#%3d "%self.iter +":"+ str)
+        print("#%3d "%self.iter +":"+ message)
 
-    def set_iter(self,iter):
+    def set_iter(self, iteration):
         """
         Set iteration number
-        :param iter: iteration number to set
+        :param iteration: iteration number to set
         :return: none
         """
-        self.iter = iter
+        self.iter = iteration
 
 
 class masked_parameters:
@@ -55,7 +55,7 @@ class masked_parameters:
         for i,a in zip(range(len(p)), active):
             if a:
                 self.idx_active.append(i)
-
+        self.active=None
     def get_all(self):
         """
         Retrun (copy of) all model parametrs including those that are frozen (e.g. for evaluation of object function)
@@ -98,12 +98,12 @@ class masked_parameters:
         """
         return masked_parameters(self.p_all, self.active_all)
 
-    def set_mask(self,active):
+    def set_mask(self, active):
         if len(active) != len(self.active_all):
             raise ValueError("length of parameter array active (="+str(len(active))+" is not correct. Expecting length "+
                              str(len(self.active)))
-        self.idx_active=[]
-        for i,a in zip(range(len(p)), active):
+        self.idx_active = []
+        for i, a in zip(range(len(self.p_all)), active):
             if a:
                 self.idx_active.append(i)
         self.active = active.copy()
@@ -115,14 +115,14 @@ class masked_parameters:
         :return:
         """
         if len(active) != len(self.idx_active):
-            raise ValueError("length of parameter array maks (="+str(len(mask))+" is not correct. Expecting length "+
+            raise ValueError("length of parameter array maks (="+str(len(active))+" is not correct. Expecting length "+
                              str(len(self.idx_active)))
         idx_keep = []
         self.active_all = [False] * len(self.p_all)
         for idx, act in zip(self.idx_active, active):
             if act:
                 idx_keep.append(idx)
-                self.active_all[idx]=True
+                self.active_all[idx] = True
         self.idx_active = idx_keep
 
     def get_active_mask(self):
@@ -310,7 +310,7 @@ def max_step_p_new(printer,p_curr, p_new, l_bound, u_bound, alpha_min=1e-2):
     if not all([l <= p <= u for p, l, u in zip(p_curr_act, l_bound_act, u_bound_act)]):
         printer.print("print all parameters and bound, error will follow")
         printer.print("lower, param, upper")
-        for p, l, u in zip(parameters_act[:, -1], l_bound_act, u_bound_act):
+        for p, l, u in zip(p_curr[:, -1], l_bound_act, u_bound_act):
             printer.print(str(l)+" "+str(p) + " "+str(u))
         raise ValueError("current parameters are outside upper and lower bounds")
 
