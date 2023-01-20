@@ -12,7 +12,7 @@ import warnings
 import os
 from py4j.java_gateway import JavaGateway
 
-import py_openda.utils.py4j_utils as utils
+import openda.utils.py4j_utils as utils
 
 try:
     gateway = JavaGateway()   # connect to the JVM
@@ -114,4 +114,3 @@ class Kwadratic:
         val = self.cost_function.evaluate(p_new, "-")
         print("Cost="+str(val)+" p="+str(p))
         return prd
-    

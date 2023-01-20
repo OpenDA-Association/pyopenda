@@ -9,9 +9,9 @@ Created on Fri Oct 12 15:06:13 2018
 
 @author: hegeman
 """
-from py_openda.costFunctions.simulation_kwadratic_cost_function import simulation_kwadratic_cost_function
-from py_openda.costFunctions.model_instance import model_instance
-from py_openda.costFunctions.stoch_observer import stoch_observer
+from openda.costFunctions.simulation_kwadratic_cost_function import simulation_kwadratic_cost_function
+from openda.costFunctions.model_instance import model_instance
+from openda.costFunctions.stoch_observer import stoch_observer
 
 class PyKwadratic:
     """

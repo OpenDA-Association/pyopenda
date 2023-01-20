@@ -15,11 +15,11 @@ Created on Tue Nov 20 15:27:05 2018
 import warnings
 import os
 from py4j.java_gateway import JavaGateway
-import py_openda.utils.py4j_utils as utils
-from py_openda.interfaces.IModelFactory import IModelFactory
-from py_openda.interfaces.IStochModelInstance import IStochModelInstance
-from py_openda.interfaces.IStochObserver import IStochObserver
-from py_openda.interfaces.ITime import ITime
+import openda.utils.py4j_utils as utils
+from openda.interfaces.IModelFactory import IModelFactory
+from openda.interfaces.IStochModelInstance import IStochModelInstance
+from openda.interfaces.IStochObserver import IStochObserver
+from openda.interfaces.ITime import ITime
 
 
 try:
@@ -158,7 +158,7 @@ class JModelInstance(IStochModelInstance):
                 noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
             elif main_or_ens == "ens":
                 noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
-        
+
         if noise_config.get('@stochInit'):
             init = self.model.getStateUncertainty()
             self.model.axpyOnState(1.0, init.createRealization())
