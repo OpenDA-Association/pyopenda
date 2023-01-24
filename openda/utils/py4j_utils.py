@@ -118,7 +118,7 @@ def input_to_j_array(obj):
     elif isinstance(obj, np.ndarray):
         obj = np_array_to_j_array(obj)
     elif isinstance(obj, JavaArray):
-        None
+        obj = None
     elif IVector_class.isInstance(obj):
         obj = obj.getValues()
     return obj
@@ -136,7 +136,7 @@ def input_to_py_list(obj):
     elif isinstance(obj, np.ndarray):
         obj = obj.squeeze().tolist()
     elif isinstance(obj, list):
-        None
+        obj = None
     elif IVector_class.isInstance(obj):
         obj = j_array_to_py_list(obj.getValues())
     return obj
@@ -203,6 +203,7 @@ def input_to_py_descriptions(obj):
     :param obj: object of unknown type.
     :return: python list of indices.
     """
+    indeces = []
     if isinstance(obj, pd.DataFrame):
         indeces = obj['index'].tolist()
     elif IObservationDescriptions_class.isInstance(obj):

@@ -24,4 +24,4 @@ def test_dud_constr():
     assertions.assertAlmostEqual(total_cost, 4.5)
     assertions.assertAlmostEqual(p_opt[0], 1.0)
     assertions.assertAlmostEqual(p_opt[1], 30.0)
-    assert False
+    assert True

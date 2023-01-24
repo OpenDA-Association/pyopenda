@@ -43,7 +43,7 @@ class ITime:
         """
         raise NotImplemented("Function not implemented.")
 
-    def get_step_mjd():
+    def get_step_mjd(self):
         """
         Get the time step interval in days (as Modified Julian Day).
         :return The time step interval. Throw an exception if is is not available.

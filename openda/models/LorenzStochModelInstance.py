@@ -11,9 +11,9 @@ from math import sqrt
 import numpy as np
 from scipy.stats import norm
 from scipy.integrate import ode
-from py_openda.costFunctions.JObjects import PyTime
-import py_openda.utils.py4j_utils as utils
-from py_openda.interfaces.IStochModelInstance import IStochModelInstance
+from openda.costFunctions.JObjects import PyTime
+import openda.utils.py4j_utils as utils
+from openda.interfaces.IStochModelInstance import IStochModelInstance
 
 
 class LorenzStochModelInstance(IStochModelInstance):
@@ -28,7 +28,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         """
         (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.sys_mean,
          self.sys_std, self.span) = model_attributes
-        
+
         if noise_config is None:
             if main_or_ens == "main":
                 noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
@@ -76,7 +76,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         :param descriptions: an ObservationDescriptions object with meta data for the observations.
         :return:
         """
-        None
+        pass
 
     def compute(self, time):
         """

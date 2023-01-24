@@ -27,11 +27,11 @@ class IObservationDescription:
         """
         raise NotImplemented("Function not implemented.")
 
-    def get_properties(self, key:str):
+    def get_properties(self, key: str):
         """"
         Get properties (values) that correspond to a given key.
 
-        :param Key key for which the value is asked
+        :param key key for which the value is asked
         :return Properties (column of data from observation descriptions).
         """
         raise NotImplemented("Function not implemented.")

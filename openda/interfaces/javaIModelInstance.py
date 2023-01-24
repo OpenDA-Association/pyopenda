@@ -43,20 +43,7 @@ class IModelInstance:
         """
         raise NotImplemented("Function not implemented.")
 
-    def getObservedLocalization(self, observationDescriptions, distance):
-        """
-        Returns the localization weights for each observation location.
-        This method assumes that there is only one state vector.
-        :param observationDescriptions observation description
-        :param distance characteristic distance for Cohn's formula
-        :return weight vector for each observation location.
-
-        The size of the returned array must equal the number of observation locations in the given observationDescriptions.
-        The size of each vector in the returned array must equal the size of the state vector of the implementing modelInstance.
-        """
-        raise NotImplemented("Function not implemented.")
-
-    def getObservedLocalization(self, observationDescriptions, distance, iDomain):
+    def getObservedLocalization(self, observationDescriptions, distance, iDomain=None):
         """
         Returns the localization weights for each observation location.
         This method assumes that there is only one state vector.

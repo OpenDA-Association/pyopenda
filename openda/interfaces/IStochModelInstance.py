@@ -63,7 +63,7 @@ class IStochModelInstance:
         Update the state vector of the model.
 
         :param state_array: numpy array used to update the model state.
-        :main_or_ens: "main" for updating the main model, "ens" for ensemble members.
+        :param main_or_ens: "main" for updating the main model, "ens" for ensemble members.
         :return:
         """
         raise NotImplemented("Function not implemented.")
