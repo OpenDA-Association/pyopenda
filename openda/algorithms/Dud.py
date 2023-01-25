@@ -22,7 +22,7 @@ class dud_printer:
     def print(self, message):
         """
         Print information with iteration info in front
-        :param str: String to print
+        :param message: String to print
         :return: none
         """
         print("#%3d "%self.iter +":"+ message)
@@ -47,8 +47,8 @@ class masked_parameters:
         :param active: boolean array that indicates for each parameter whether is is active of not (=frozen)
         """
         if len(p) != len(active):
-            raise ValueError("arguments p and active must have the same length: len(p)="+str(len(p)+
-                             " len(active)="+str(len(active))))
+            raise ValueError("arguments p and active must have the same length: len(p)="+str(len(p))+
+                             " len(active)="+str(len(active)))
         self.p_all = p.copy()
         self.active_all = active.copy()
         self.idx_active = []
@@ -146,16 +146,16 @@ class masked_parameters:
 def marked_array(vec, marker):
     if len(vec) != len(vec):
         raise ValueError("length vector (=" + str(len(vec)) + ") is different from length marker array (" +
-                         str(len(vec)))+")"
-    str ="["
+                         str(len(vec))+")")
+    str_ret ="["
     for i in range(len(marker)):
-        str+="%e"%vec[i]
+        str_ret+="%e"%vec[i]
         if marker[i]:
-            str+="*"
+            str_ret+="*"
         if i<len(marker)-1:
-            str+=" ,"
-    str+="]"
-    return str
+            str_ret+=" ,"
+    str_ret+="]"
+    return str_ret
 
 def check_A(printer, A, treshhold=1e20):
     """
@@ -204,7 +204,7 @@ def initialize_dud(func, p_old:masked_parameters, obs, std, p_pert_m:masked_para
     :param p_old: first guess of the parameters.
     :param obs: list of observations we aim to reproduce.
     :param std: list of corresponding standard deviations.
-    :param p_pert: the initial pertubation of the parameters (user provided)
+    :param p_pert_m: the initial pertubation of the parameters (user provided)
     :param start_dist: Factor by which p_old is multiplied to find the search directions
     (default 1.1).
     :return: tuple with the parameters, function evaluations and total costs.
@@ -253,7 +253,7 @@ def find_next_params(printer,p, parameters, func_evals, obs, std, max_step=10):
     """
     Function used to find the next search direction.
 
-    :param func: the function for which we aim to find the optimal parameters.
+    :param printer: output handler
     :param parameters: array with the parameters.
     :param func_evals: array with function predictions at the observation locations.
     :param obs: list of observations we aim to reproduce.
@@ -427,7 +427,7 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
     Main function which minimizes a least squares problem without using derivatives.
 
     :param func: the function for which we aim to find the optimal parameters.
-    :param p_old: first guess of the parameters.
+    :param p_start: first guess of the parameters.
     :param obs: list of observations we aim to reproduce.
     :param std: list of corresponding standard deviations.
     :param xtol: desired accuracy of the result (default 1e-3).
