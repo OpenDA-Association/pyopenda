@@ -18,4 +18,4 @@ class IModelFactory:
         :param main_or_ens: determines the ouput level of the model.
         :return: the stochastic Model instance.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")

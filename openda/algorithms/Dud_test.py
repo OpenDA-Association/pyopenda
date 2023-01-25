@@ -7,7 +7,7 @@ Created on Fri Oct 12 11:06:08 2018
 """
 
 import unittest
-from py_openda.algorithms import Dud
+from openda.algorithms import Dud
 
 
 def f(p):

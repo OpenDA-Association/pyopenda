@@ -1,5 +1,6 @@
 import openda.interfaces.IModelInstance as IModelInstance
 
+
 class IStochModelInstance(IModelInstance):
     """
     Interface to specify the functions for a stochastic model.
