@@ -249,7 +249,7 @@ def initialize_dud(func, p_old:masked_parameters, obs, std, p_pert_m:masked_para
 
 
 
-def find_next_params(printer,p, parameters, func_evals, obs, std, max_step=10):
+def find_next_params(printer,p, parameters, func_evals, obs, std):
     """
     Function used to find the next search direction.
 
@@ -258,7 +258,6 @@ def find_next_params(printer,p, parameters, func_evals, obs, std, max_step=10):
     :param func_evals: array with function predictions at the observation locations.
     :param obs: list of observations we aim to reproduce.
     :param std: list of corresponding standard deviations.
-    :keyword argument max_step: upper limit for how much the parameters change (default 10).
     :return: tuple which contains a boolean that is true if finding new parameters was impossible
     and a list containing the next search direction.
     """
@@ -275,8 +274,8 @@ def find_next_params(printer,p, parameters, func_evals, obs, std, max_step=10):
     if check_A(printer,A):
         return (True, p_new)
     alpha = lu_solve(lu_factor(A), np.transpose(Delta_F).dot(np.divide(residue, std)))
-    if np.max(abs(alpha)) > max_step:
-        alpha *= max_step/np.max(abs(alpha))
+    #if np.max(abs(alpha)) > max_step:
+    #    alpha *= max_step/np.max(abs(alpha))
     p_new_active = parameters[:, -1] + Delta_P.dot(np.transpose(alpha))
 
     p_new.set_act(p_new_active)
@@ -453,7 +452,6 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
         p_pert = [p_start[i]* (start_dist - 1.0) + start_eps for i in range(len(p_start))]
 
     finish = 0
-    max_step = 10
 
     #For the handling of bounds we can activate and deactivate parameters.
     #Initially all parameters are active
@@ -490,9 +488,9 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
 
         # TODO: For new outerloop we should not throw the previous steps away!
         hist = {}
-        hist["parameters"] = list(parameters.copy())
-        hist["func_evals"] = list(func_evals.copy())
-        hist["total_cost"] = list(total_cost.copy())
+        #hist["parameters"] = list(parameters.copy().T)
+        #hist["func_evals"] = list(func_evals.copy().T)
+        #hist["total_cost"] = list(total_cost.copy())
 
 
         iterate_innerloop = True
@@ -501,7 +499,7 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
         while iterate_innerloop:
 
             # Find new optimum of linear apporixmation of optimizatiopn problem
-            (stop, p_propose) = find_next_params(printer, p_curr, parameters, func_evals, obs, std, max_step)
+            (stop, p_propose) = find_next_params(printer, p_curr, parameters, func_evals, obs, std)
             if stop:
                 do_new_outer_loop = False
                 break
@@ -568,11 +566,6 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
                 do_new_outer_loop = True
                 break
 
-            #TODO WHAT TO DO WHEN WE RESTART......
-            hist["parameters"].append(next_parameters.copy())
-            hist["func_evals"].append(next_func_evals.copy())
-            hist["total_cost"].append(next_total_cost.copy())
-
             p_number = p_propose.len_act()
             all_params = np.concatenate((parameters, func_evals, np.expand_dims(total_cost, 0)))
             all_params = np.delete(all_params, 0, 1)
@@ -584,6 +577,11 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
 
             # Set new best approximation
             p_curr.set_act(parameters[:, -1])
+
+            # Store current point
+            #hist["parameters"].append(np.array(p_curr.get_all()))
+            #hist["func_evals"].append(np.array(next_func_evals.copy()))
+            #hist["total_cost"].append(next_total_cost.copy())
 
             if abs(total_cost[-1] - total_cost[-2]) < xtol * abs(total_cost[-2]):
                 finish += 1
@@ -602,8 +600,8 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
                 break
 
         #tidy up hist
-        hist["parameters"] = np.array([list(p) for p in hist["parameters"]]).T.tolist()
-        hist["func_evals"] = np.array([list(p) for p in hist["func_evals"]]).T.tolist()
+        #hist["parameters"] = np.array([list(p) for p in hist["parameters"]]).T.tolist()
+        #hist["func_evals"] = np.array([list(p) for p in hist["func_evals"]]).T.tolist()
 
     # Get the parameters that correspond to lowest object function
     if set_last_value:
