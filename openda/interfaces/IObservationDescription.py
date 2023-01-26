@@ -62,4 +62,4 @@ class IObservationDescription:
         returned in exactly one batch this way.
         :return Array with all uniquely different times.
 """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
