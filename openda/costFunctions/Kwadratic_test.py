@@ -7,10 +7,11 @@ Created on Fri Oct 12 11:00:00 2018
 """
 
 import unittest
+from openda.utils.py4j_utils import py_list_to_j_array, j_array_to_py_list
 import Kwadratic
 
 class TestKwadratic(unittest.TestCase):
-    
+
     def test_array(self):
         a = py_list_to_j_array([1,2,3])
         b = py_list_to_j_array([1.0,2.0,3.0])

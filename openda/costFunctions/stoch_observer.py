@@ -8,7 +8,11 @@ Created on Fri Oct 12 13:50:20 2018
 
 
 class stoch_observer:
-    def __init__(self, expectations=[1, 2, 3, 4, 5, 6, 7, 8, 9], standard_deviations=[1, 1, 1, 1, 1, 1, 1, 1, 1]):
+    def __init__(self, expectations=None, standard_deviations=None):
+        if expectations is None:
+            expectations = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        if standard_deviations is None:
+            standard_deviations = [1, 1, 1, 1, 1, 1, 1, 1, 1]
         self.expectations = expectations
         self.standard_deviations = standard_deviations
         self.selection = range(0,len(expectations)) #Geeft indices

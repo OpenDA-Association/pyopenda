@@ -39,6 +39,7 @@ class JModelFactory(IModelFactory):
         :param config: dictionary used for configuration.
         :param scriptdir: location of the main .oda file.
         """
+        super().__init__()
         model_input_dir = os.path.join(scriptdir, config.get('workingDirectory'))
         model_config_xml = config.get('configFile')
         self.model_factory = None
@@ -54,6 +55,7 @@ class JModelFactory(IModelFactory):
         :param main_or_ens: determines the ouput level of the model.
         :return: the stochastic Model instance.
         """
+        output_level = 0
         if main_or_ens == 'main':
             output_level = gateway.jvm.org.openda.interfaces.IStochModelFactory.OutputLevel.ModelDefault
         elif main_or_ens == 'ens':
@@ -73,6 +75,7 @@ class JStochObserver(IStochObserver):
         :param clone: if None (default), the class will initialize from configuration, otherwise
         the class will be a copy of clone.
         """
+        super().__init__()
         if clone is None:
             observer_input_dir = os.path.join(scriptdir, config.get('workingDirectory'))
             observer_config_xml = config.get('configFile')
@@ -152,6 +155,7 @@ class JModelInstance(IStochModelInstance):
         :param noise_config: dictionary as given by EnkfAlgorithm.xml for the noise configuration.
         :param main_or_ens: determines the ouput level of the model.
         """
+        super().__init__()
         self.model = model
         if noise_config is None:
             if main_or_ens == "main":
@@ -255,6 +259,7 @@ class JTime(ITime):
         :param start: start of the time period.
         :param end: end of the time period.
         """
+        super().__init__()
         if end is None:
             self.time = gateway.jvm.org.openda.utils.Time(start)
         else:
@@ -311,6 +316,7 @@ class PyTime(ITime):
         :param start: start of the time period.
         :param end: end of the time period.
         """
+        super().__init__()
         self.start = start
         if end is None:
             self.end = start

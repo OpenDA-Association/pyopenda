@@ -26,6 +26,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         :param noise_config: dictionary as given by EnkfAlgorithm.xml for the noise configuration.
         :param main_or_ens: determines the ouput level of the model.
         """
+        super().__init__()
         (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.sys_mean,
          self.sys_std, self.span) = model_attributes
 

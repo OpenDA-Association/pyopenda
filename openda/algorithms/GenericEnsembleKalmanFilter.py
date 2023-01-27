@@ -91,7 +91,6 @@ class GenericEnsembleKalmanFilter:
         """
         Get realizations from the stoch observer.
 
-        :param selection: stoch observer.
         :return: numpy array with realizations.
         """
         return utils.input_to_np_array(self.selection.get_realizations())

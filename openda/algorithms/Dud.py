@@ -453,6 +453,11 @@ def dud(func, p_start, p_std, p_pert, obs, std, xtol=1e-3, p_tol=1e-4, start_dis
 
     finish = 0
 
+    # Just to make pylint happy
+    parameters = None
+    total_cost = None
+    hist ={}
+
     #For the handling of bounds we can activate and deactivate parameters.
     #Initially all parameters are active
     active = [True] * len(p_start)
