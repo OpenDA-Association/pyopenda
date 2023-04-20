@@ -20,7 +20,7 @@ try:
     IVector_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.IVector")
     ITime_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.ITime")
     IObservationDescriptions_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.IObservationDescriptions")
-except:
+except Exception:
     warnings.warn("Cannot connect to JVM did you start oda_py4j. Java building blocks cannot be used")
 
 

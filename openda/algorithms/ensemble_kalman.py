@@ -60,6 +60,7 @@ def kalman_matrix(enkf, predictions, observations):
     return k_mat
 
 
+#pylint: disable=too-many-arguments
 def kalman_update(enkf, observations, predictions, mean_observations, mean_predicitons, k_mat):
     """
     Function for updating the states, model and ensemble member using the kalman gain.

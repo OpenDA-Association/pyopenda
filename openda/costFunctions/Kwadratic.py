@@ -16,7 +16,7 @@ import openda.utils.py4j_utils as utils
 
 try:
     gateway = JavaGateway()   # connect to the JVM
-except:
+except Exception:
     warnings.warn("Cannot connect to JVM did you start oda_py4j. Java building blocks cannot be used")
 
 
