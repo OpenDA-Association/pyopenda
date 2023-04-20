@@ -10,6 +10,7 @@ Created on Tue Nov 20 15:43:21 2018
 """
 import numpy as np
 
+
 def kalman_algorithm(enkf):
     """
     Main algorithm for ensemble kalman filtering. Runs the prediction step and the update step.
@@ -22,10 +23,11 @@ def kalman_algorithm(enkf):
     (observations, mean_observations) = enkf.get_ensemble_vectors_forecast()
     pred_f_central = enkf.get_results()
 
-    K = kalman_matrix(enkf, predictions, observations)
-    kalman_update(enkf, observations, predictions, mean_observations, mean_predicitons, K)
+    k_mat = kalman_matrix(enkf, predictions, observations)
+    kalman_update(enkf, observations, predictions, mean_observations, mean_predicitons, k_mat)
 
     return pred_f_central
+
 
 def kalman_matrix(enkf, predictions, observations):
     """
@@ -41,25 +43,24 @@ def kalman_matrix(enkf, predictions, observations):
     n_observations = observations.shape[0]
     n_ensemble = predictions.shape[1]
     state_lenght = predictions.shape[0]
-    sqrt_q_min1 = (n_ensemble -1.0)**0.5
+    sqrt_q_min1 = (n_ensemble - 1.0)**0.5
 
     pred_mat = observations.copy()
     pred_mat /= sqrt_q_min1
-    D = np.zeros((n_observations, n_observations))
-    D = pred_mat.dot(pred_mat.transpose())
-    D += sqrt_r.dot(sqrt_r.transpose())
+    d_mat = pred_mat.dot(pred_mat.transpose())
+    d_mat += sqrt_r.dot(sqrt_r.transpose())
 
     predictions /= sqrt_q_min1
-    D_inverse = np.linalg.inv(D)
-    E = np.zeros((n_ensemble, n_observations))
-    E = pred_mat.transpose().dot(D_inverse)
-    K = np.zeros((state_lenght, n_observations))
+    d_mat_inverse = np.linalg.inv(d_mat)
+    e_mat = pred_mat.transpose().dot(d_mat_inverse)
+    k_mat = np.zeros((state_lenght, n_observations))
     for i in range(n_observations):
         for j in range(n_ensemble):
-            K[:, i] += E[j, i]*predictions[:, j]
-    return K
+            k_mat[:, i] += e_mat[j, i]*predictions[:, j]
+    return k_mat
 
-def kalman_update(enkf, observations, predictions, mean_observations, mean_predicitons, K):
+
+def kalman_update(enkf, observations, predictions, mean_observations, mean_predicitons, k_mat):
     """
     Function for updating the states, model and ensemble member using the kalman gain.
 
@@ -67,24 +68,25 @@ def kalman_update(enkf, observations, predictions, mean_observations, mean_predi
     :param observations: numpy array containing the values of each ensemble member at the observed location.
     :param predictions: numpy array containing the state vectors for each ensemble member.
     :param mean_observations: numpy array containing the ensemble mean at the observed location.
-    :param mean_observations: numpy array containing the ensemble mean of the state vector.
-    :param K: kalman gain
+    :param mean_predicitons: numpy array containing the ensemble mean of the state vector.
+    :param k_mat: kalman gain
 
     :return:
     """
-    state_lenght = K.shape[0]
+    state_lenght = k_mat.shape[0]
     n_ensemble = observations.shape[1]
     for i in range(n_ensemble):
         innovation = enkf.get_realizations() - observations[:, i] - mean_observations.transpose()
         delta = np.zeros((state_lenght, 1))
-        delta[:] = K.dot(innovation.transpose())
-        #TODO: State update happens both here and within the model object.
-        #Looks terrible but saves 1 conversion.
+        delta[:] = k_mat.dot(innovation.transpose())
+        # TODO: State update happens both here and within the model object.
+        # Looks terrible but saves 1 conversion.
         enkf.update_state(i, delta)
         for j in range(predictions.shape[0]):
             predictions[j, i] = predictions[j, i] + delta[j]
     prediction_mean = np.array([np.mean(predictions, axis=1)]).transpose() + mean_predicitons
     enkf.update_model(prediction_mean)
+
 
 def no_filter(enkf):
     """

@@ -238,8 +238,7 @@ def initialize_dud(func, p_old: MaskedParameters, obs, std, p_pert_m: MaskedPara
         if not (l_bound_act_vals[i] < plist[i]+p_step < u_bound_act_vals[i]):
             if not (l_bound_act_vals[i] < plist[i]-p_step < u_bound_act_vals[i]):
                 raise ValueError("initial pertubation is too large it extends boundaries in both directions")
-            else:
-                plist[i] = plist[i] - p_step
+            plist[i] = plist[i] - p_step
         else:
             plist[i] = plist[i] + p_step
         # Evaluate model
