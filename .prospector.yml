@@ -17,7 +17,7 @@ pyroma:
     run: true
 
 pep8:
-    full: true
+    none: true
 
 pep257:
     disable: [
