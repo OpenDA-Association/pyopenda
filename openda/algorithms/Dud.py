@@ -8,10 +8,9 @@ Created on Wed Oct 10 14:35:15 2018
 
 @author: hegeman
 """
-
+import math
 import numpy as np
 from scipy.linalg import lu_factor, lu_solve
-import math
 
 ITER_PRINT = 0
 

@@ -5,11 +5,7 @@ Created on Mon Oct 15 15:23:24 2018
 
 @author: hegeman
 """
-
 import csv
-# file = open('test.txt','r')
-# file = open('meas_l021triad001_loc.tab','r')
-# print(file.read())
 
 
 def get_obs(file_name):
