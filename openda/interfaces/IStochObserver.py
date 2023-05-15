@@ -17,7 +17,7 @@ class IStochObserver:
         :param model_span: time span with selection.
         :return: stochastic observer containing the required selection.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_times(self):
         """
@@ -25,7 +25,7 @@ class IStochObserver:
 
         :return: some type of vector containing the times
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_count(self):
         """
@@ -33,7 +33,7 @@ class IStochObserver:
 
         :return: the number of observations.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_observation_descriptions(self):
         """
@@ -41,7 +41,7 @@ class IStochObserver:
 
         :return: observation descriptions which are compatible with the used model instance
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_sqrt_covariance(self):
         """
@@ -49,14 +49,13 @@ class IStochObserver:
 
         :return: the covariance matrix as numpy array.
         """
-        raise NotImplemented("Function not implemented.")
-
+        raise NotImplementedError("Function not implemented.")
 
     def get_standard_deviation(self):
         """
         Get the standard deviation for each stochastic observation
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_realizations(self):
         """
@@ -64,4 +63,4 @@ class IStochObserver:
 
         :return: the realizations.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")

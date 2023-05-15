@@ -9,7 +9,8 @@ Created on Thu Nov 22 11:29:15 2018
 
 import os
 import xmlschema
-from py_openda.models.LorenzStochModelInstance import LorenzStochModelInstance
+from openda.models.LorenzStochModelInstance import LorenzStochModelInstance
+
 
 class LorenzStochModelFactory:
     """

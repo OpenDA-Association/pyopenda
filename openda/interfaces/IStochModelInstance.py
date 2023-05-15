@@ -17,7 +17,7 @@ class IStochModelInstance:
 
         :return: the time horizon (containing begin and end time).
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_current_time(self):
         """
@@ -25,7 +25,7 @@ class IStochModelInstance:
 
         :return: The model's current simulation time stamp.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def announce_observed_values(self, descriptions):
         """
@@ -37,7 +37,7 @@ class IStochModelInstance:
         :param descriptions: an ObservationDescriptions object with meta data for the observations.
         :return:
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def compute(self, time):
         """
@@ -47,7 +47,7 @@ class IStochModelInstance:
         :param time: Time to compute to.
         :return:
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_observations(self, descriptions):
         """
@@ -56,17 +56,17 @@ class IStochModelInstance:
         :param descriptions: An ObservationDescriptions object with meta data for the observations
         :return: python list with the model values corresponding to the descriptions
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def update_state(self, state_array, main_or_ens):
         """
         Update the state vector of the model.
 
         :param state_array: numpy array used to update the model state.
-        :main_or_ens: "main" for updating the main model, "ens" for ensemble members.
+        :param main_or_ens: "main" for updating the main model, "ens" for ensemble members.
         :return:
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_state(self):
         """
@@ -74,4 +74,4 @@ class IStochModelInstance:
 
         :return: State vector.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")

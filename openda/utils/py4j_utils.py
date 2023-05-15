@@ -12,15 +12,16 @@ Created on Tue Nov 20 15:16:14 2018
 import warnings
 import numpy as np
 import pandas as pd
-from py4j.java_gateway import JavaGateway
 from py4j.java_collections import JavaArray
+from py4j.java_gateway import JavaGateway
+
 
 try:
     gateway = JavaGateway()   # connect to the JVM
     IVector_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.IVector")
     ITime_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.ITime")
     IObservationDescriptions_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.IObservationDescriptions")
-except:
+except Exception:
     warnings.warn("Cannot connect to JVM did you start oda_py4j. Java building blocks cannot be used")
 
 
@@ -118,7 +119,7 @@ def input_to_j_array(obj):
     elif isinstance(obj, np.ndarray):
         obj = np_array_to_j_array(obj)
     elif isinstance(obj, JavaArray):
-        None
+        obj = None
     elif IVector_class.isInstance(obj):
         obj = obj.getValues()
     return obj
@@ -136,7 +137,7 @@ def input_to_py_list(obj):
     elif isinstance(obj, np.ndarray):
         obj = obj.squeeze().tolist()
     elif isinstance(obj, list):
-        None
+        obj = None
     elif IVector_class.isInstance(obj):
         obj = j_array_to_py_list(obj.getValues())
     return obj
@@ -203,6 +204,7 @@ def input_to_py_descriptions(obj):
     :param obj: object of unknown type.
     :return: python list of indices.
     """
+    indeces = []
     if isinstance(obj, pd.DataFrame):
         indeces = obj['index'].tolist()
     elif IObservationDescriptions_class.isInstance(obj):

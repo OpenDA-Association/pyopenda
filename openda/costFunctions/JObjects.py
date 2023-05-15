@@ -12,19 +12,19 @@ Created on Tue Nov 20 15:27:05 2018
 
 @author: hegeman
 """
-import warnings
 import os
+import warnings
 from py4j.java_gateway import JavaGateway
-import py_openda.utils.py4j_utils as utils
-from py_openda.interfaces.IModelFactory import IModelFactory
-from py_openda.interfaces.IStochModelInstance import IStochModelInstance
-from py_openda.interfaces.IStochObserver import IStochObserver
-from py_openda.interfaces.ITime import ITime
+import openda.utils.py4j_utils as utils
+from openda.interfaces.IModelFactory import IModelFactory
+from openda.interfaces.IStochModelInstance import IStochModelInstance
+from openda.interfaces.IStochObserver import IStochObserver
+from openda.interfaces.ITime import ITime
 
 
 try:
     gateway = JavaGateway()   # connect to the JVM
-except:
+except Exception:
     warnings.warn("Cannot connect to JVM did you start oda_py4j. Java building blocks cannot be used")
 
 
@@ -39,10 +39,12 @@ class JModelFactory(IModelFactory):
         :param config: dictionary used for configuration.
         :param scriptdir: location of the main .oda file.
         """
+        super().__init__()
         model_input_dir = os.path.join(scriptdir, config.get('workingDirectory'))
         model_config_xml = config.get('configFile')
         self.model_factory = None
         model_object = 'gateway.jvm.'+config.get('@className')
+        # pylint: disable=consider-using-f-string
         exec('self.model_factory =%s()' % model_object)
         utils.initialize_openda_configurable(self.model_factory, model_input_dir, model_config_xml)
 
@@ -54,6 +56,7 @@ class JModelFactory(IModelFactory):
         :param main_or_ens: determines the ouput level of the model.
         :return: the stochastic Model instance.
         """
+        output_level = 0
         if main_or_ens == 'main':
             output_level = gateway.jvm.org.openda.interfaces.IStochModelFactory.OutputLevel.ModelDefault
         elif main_or_ens == 'ens':
@@ -73,11 +76,13 @@ class JStochObserver(IStochObserver):
         :param clone: if None (default), the class will initialize from configuration, otherwise
         the class will be a copy of clone.
         """
+        super().__init__()
         if clone is None:
             observer_input_dir = os.path.join(scriptdir, config.get('workingDirectory'))
             observer_config_xml = config.get('configFile')
             self.observer = None
             observer_object = 'gateway.jvm.'+config.get('@className')
+            # pylint: disable=consider-using-f-string
             exec('self.observer =%s()' % observer_object)
             utils.initialize_openda_configurable(self.observer, observer_input_dir,
                                                  observer_config_xml)
@@ -152,13 +157,14 @@ class JModelInstance(IStochModelInstance):
         :param noise_config: dictionary as given by EnkfAlgorithm.xml for the noise configuration.
         :param main_or_ens: determines the ouput level of the model.
         """
+        super().__init__()
         self.model = model
         if noise_config is None:
             if main_or_ens == "main":
                 noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
             elif main_or_ens == "ens":
                 noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
-        
+
         if noise_config.get('@stochInit'):
             init = self.model.getStateUncertainty()
             self.model.axpyOnState(1.0, init.createRealization())
@@ -255,6 +261,7 @@ class JTime(ITime):
         :param start: start of the time period.
         :param end: end of the time period.
         """
+        super().__init__()
         if end is None:
             self.time = gateway.jvm.org.openda.utils.Time(start)
         else:
@@ -311,6 +318,7 @@ class PyTime(ITime):
         :param start: start of the time period.
         :param end: end of the time period.
         """
+        super().__init__()
         self.start = start
         if end is None:
             self.end = start
@@ -356,7 +364,7 @@ class PyTime(ITime):
         :param other_time: time object to be compared
         :return: True if self starts after other_time ends.
         """
-        return self.start > other_time.get_end()
+        return (self.start > other_time.get_end())
 
     def get_step_mjd(self):
         """
@@ -365,6 +373,7 @@ class PyTime(ITime):
         """
         if self.is_span:
             return self.step
+        return None
 
     def get_mjd(self):
         """
@@ -374,5 +383,4 @@ class PyTime(ITime):
         """
         if not self.is_span:
             return self.start
-        else:
-            return 0.5*(self.start+self.end)
+        return 0.5*(self.start+self.end)

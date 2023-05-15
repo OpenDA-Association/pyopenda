@@ -9,9 +9,10 @@ Created on Fri Oct 12 15:06:13 2018
 
 @author: hegeman
 """
-from py_openda.costFunctions.simulation_kwadratic_cost_function import simulation_kwadratic_cost_function
-from py_openda.costFunctions.model_instance import model_instance
-from py_openda.costFunctions.stoch_observer import stoch_observer
+from openda.costFunctions.model_instance import model_instance
+from openda.costFunctions.simulation_kwadratic_cost_function import simulation_kwadratic_cost_function
+from openda.costFunctions.stoch_observer import stoch_observer
+
 
 class PyKwadratic:
     """
@@ -46,7 +47,7 @@ class PyKwadratic:
         obs_mean = self.observer.get_expectations()
         obs_std = self.observer.get_standard_deviations()
 
-        return (obs_mean, obs_std)
+        return obs_mean, obs_std
 
     def object_function(self, p):
         """
@@ -57,4 +58,3 @@ class PyKwadratic:
         prd = self.cost_function.evaluate(p)
         print("Cost="+str(prd)+" p="+str(p))
         return prd
-

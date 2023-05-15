@@ -5,15 +5,14 @@ Created on Mon Oct 15 15:23:24 2018
 
 @author: hegeman
 """
-
 import csv
-##file = open('test.txt','r')
-#file = open('meas_l021triad001_loc.tab','r')
-#print(file.read())
+
+
 def get_obs(file_name):
     obs = []
+    # pylint: disable=unspecified-encoding
     with open(file_name, 'r') as file:
-        array_reader = csv.reader(file, delimiter = ' ', skipinitialspace = True)
+        array_reader = csv.reader(file, delimiter=' ', skipinitialspace=True)
         count = -1
         for row in array_reader:
             if len(row) > 2 and row[0] == '%' and count == -1:
@@ -32,9 +31,10 @@ def get_obs(file_name):
     obs = [float(i) for i in obs]
     return obs
 
+
 def main():
     print(get_obs('meas_l021triad001_loc.tab'))
 
+
 if __name__ == '__main__':
     main()
-    

@@ -9,10 +9,8 @@ Created on Tue Nov 20 15:33:06 2018
 """
 
 import numpy as np
-from py_openda.costFunctions.JObjects import PyTime as Time
-
-import py_openda.utils.py4j_utils as utils
-
+import openda.utils.py4j_utils as utils
+from openda.costFunctions.JObjects import PyTime as Time
 
 
 class GenericEnsembleKalmanFilter:
@@ -41,8 +39,7 @@ class GenericEnsembleKalmanFilter:
         selection = self.observer.create_selection(model_span)
         self.analysis_times = utils.input_to_time_list(selection.get_times(), Time)
 
-
-        #TODO: This part might not be correct!
+        # TODO: This part might not be correct!
         self.this_step = -1
         if alg_config.get('analysisTimes') is not None:
             if alg_config.get('analysisTimes').get('@skipAtInitialTime'):
@@ -91,7 +88,6 @@ class GenericEnsembleKalmanFilter:
         """
         Get realizations from the stoch observer.
 
-        :param selection: stoch observer.
         :return: numpy array with realizations.
         """
         return utils.input_to_np_array(self.selection.get_realizations())
@@ -112,7 +108,7 @@ class GenericEnsembleKalmanFilter:
         ensemble_predicted_observations = np.array(ensemble_predicted_observations).transpose()
         mean_observations = np.array([np.mean(ensemble_predicted_observations, axis=1)]).transpose()
         ensemble_predicted_observations -= mean_observations
-        return(ensemble_predicted_observations, mean_observations)
+        return ensemble_predicted_observations, mean_observations
 
     def get_ensemble_vectors_state(self):
         """
@@ -127,7 +123,7 @@ class GenericEnsembleKalmanFilter:
         ensemble_states = np.array(ensemble_states).transpose()
         ensemble_mean = np.array([np.mean(ensemble_states, axis=1)]).transpose()
         ensemble_states -= ensemble_mean
-        return(ensemble_states, ensemble_mean)
+        return ensemble_states, ensemble_mean
 
     def forecast(self, time):
         """

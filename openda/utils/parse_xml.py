@@ -15,20 +15,20 @@ _main_schema = xmlschema.XMLSchema('http://schemas.openda.org/openDaApplication.
 _alg_schema = xmlschema.XMLSchema('http://schemas.openda.org/algorithm/enkf.xsd')
 
 
-
 def parse_main(input_string):
     """
     Parse a main oda-file
 
-    :return dictionaty with parsed content of the input xml 
+    :return dictionaty with parsed content of the input xml
     """
     hier = os.getcwd()
     os.chdir(input_string.rsplit('/', 1)[0])
     scriptdir = os.getcwd()
     main_config = _main_schema.decode(input_string.rsplit('/', 1)[1])
 
+    # pylint: disable=consider-using-f-string
     alg_config = _alg_schema.decode('%s/%s' % (main_config.get('algorithm').get('workingDirectory'),
-                                              main_config.get('algorithm').get('configString')))
+                                               main_config.get('algorithm').get('configString')))
 
     os.chdir(hier)
     return main_config, alg_config, scriptdir
@@ -36,5 +36,3 @@ def parse_main(input_string):
 # ensembleModel@stochParameter=false
 # ensembleModel@stochForcing=true
 # ensembleModel@stochInit=true
-    
-

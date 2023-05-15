@@ -16,7 +16,7 @@ class ITime:
 
         :return: start time.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_end(self):
         """
@@ -24,7 +24,7 @@ class ITime:
 
         :return: start time.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_is_span(self):
         """
@@ -32,7 +32,7 @@ class ITime:
 
         :return: True if self is a time span.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def after(self, other_time):
         """
@@ -41,14 +41,14 @@ class ITime:
         :param other_time: time object to be compared
         :return: True if self starts after other_time ends.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
-    def get_step_mjd():
+    def get_step_mjd(self):
         """
         Get the time step interval in days (as Modified Julian Day).
         :return The time step interval. Throw an exception if is is not available.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_mjd(self):
         """
@@ -56,10 +56,10 @@ class ITime:
 
         :return: center of time period.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def __str__(self):
         if self.get_is_span():
+            # pylint: disable=consider-using-f-string
             return "[%s, %s]"%(self.get_start(),self.get_end())
-        else:
-            return str(self.get_start())
+        return str(self.get_start())

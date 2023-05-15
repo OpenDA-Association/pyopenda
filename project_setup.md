@@ -11,7 +11,6 @@ checklist](https://guide.esciencecenter.nl/#/best_practices/checklist).
 
 This repository is set up with Python versions:
 
-- 3.6
 - 3.7
 - 3.8
 - 3.9
@@ -42,7 +41,7 @@ help you decide which tool to use for packaging.
 - The `tests` folder contains:
   - Example tests that you should replace with your own meaningful tests (file: `test_my_module.py`)
 - The testing framework used is [PyTest](https://pytest.org)
-  - [PyTest introduction](http://pythontesting.net/framework/pytest/pytest-introduction/)
+  - [PyTest introduction](http://pythontesting.net)
   - PyTest is listed as a development dependency
   - This is configured in `setup.cfg`
 - The project uses [GitHub action workflows](https://docs.github.com/en/actions) to automatically run tests on GitHub infrastructure against multiple Python versions
@@ -53,7 +52,7 @@ help you decide which tool to use for packaging.
 
 - Documentation should be put in the [`docs/`](docs/) directory. The contents have been generated using `sphinx-quickstart` (Sphinx version 1.6.5).
 - We recommend writing the documentation using Restructured Text (reST) and Google style docstrings.
-  - [Restructured Text (reST) and Sphinx CheatSheet](http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html)
+  - [Restructured Text (reST) and Sphinx CheatSheet](https://sphinx-tutorial.readthedocs.io/cheatsheet/)
   - [Google style docstring examples](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
 - The documentation is set up with the ReadTheDocs Sphinx theme.
   - Check out its [configuration options](https://sphinx-rtd-theme.readthedocs.io/en/latest/).

@@ -6,14 +6,13 @@ Created on Thu Nov 22 11:32:08 2018
 
 @author: hegeman
 """
-
 from math import sqrt
 import numpy as np
-from scipy.stats import norm
 from scipy.integrate import ode
-from py_openda.costFunctions.JObjects import PyTime
-import py_openda.utils.py4j_utils as utils
-from py_openda.interfaces.IStochModelInstance import IStochModelInstance
+from scipy.stats import norm
+import openda.utils.py4j_utils as utils
+from openda.costFunctions.JObjects import PyTime
+from openda.interfaces.IStochModelInstance import IStochModelInstance
 
 
 class LorenzStochModelInstance(IStochModelInstance):
@@ -26,9 +25,10 @@ class LorenzStochModelInstance(IStochModelInstance):
         :param noise_config: dictionary as given by EnkfAlgorithm.xml for the noise configuration.
         :param main_or_ens: determines the ouput level of the model.
         """
+        super().__init__()
         (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.sys_mean,
          self.sys_std, self.span) = model_attributes
-        
+
         if noise_config is None:
             if main_or_ens == "main":
                 noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
@@ -66,6 +66,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         """
         return self.current_time
 
+    # pylint: disable=unnecessary-pass
     def announce_observed_values(self, descriptions):
         """
         Tells model that it can expect to be asked for model values corresponding to the observations
@@ -76,7 +77,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         :param descriptions: an ObservationDescriptions object with meta data for the observations.
         :return:
         """
-        None
+        pass
 
     def compute(self, time):
         """
@@ -141,6 +142,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         """
         return self.state
 
+# pylint: disable=unused-argument
 def _lorenz_function_(t, x, params):
     """
     Function which computes the derivative of the current state at time t.
