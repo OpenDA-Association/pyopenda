@@ -14,6 +14,7 @@ import csv
 
 def get_obs(file_name):
     obs = []
+    # pylint: disable=unspecified-encoding
     with open(file_name, 'r') as file:
         array_reader = csv.reader(file, delimiter=' ', skipinitialspace=True)
         count = -1

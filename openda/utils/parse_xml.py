@@ -26,6 +26,7 @@ def parse_main(input_string):
     scriptdir = os.getcwd()
     main_config = _main_schema.decode(input_string.rsplit('/', 1)[1])
 
+    # pylint: disable=consider-using-f-string
     alg_config = _alg_schema.decode('%s/%s' % (main_config.get('algorithm').get('workingDirectory'),
                                                main_config.get('algorithm').get('configString')))
 

@@ -44,6 +44,7 @@ class JModelFactory(IModelFactory):
         model_config_xml = config.get('configFile')
         self.model_factory = None
         model_object = 'gateway.jvm.'+config.get('@className')
+        # pylint: disable=consider-using-f-string
         exec('self.model_factory =%s()' % model_object)
         utils.initialize_openda_configurable(self.model_factory, model_input_dir, model_config_xml)
 
@@ -81,6 +82,7 @@ class JStochObserver(IStochObserver):
             observer_config_xml = config.get('configFile')
             self.observer = None
             observer_object = 'gateway.jvm.'+config.get('@className')
+            # pylint: disable=consider-using-f-string
             exec('self.observer =%s()' % observer_object)
             utils.initialize_openda_configurable(self.observer, observer_input_dir,
                                                  observer_config_xml)
@@ -362,7 +364,7 @@ class PyTime(ITime):
         :param other_time: time object to be compared
         :return: True if self starts after other_time ends.
         """
-        return self.start > other_time.get_end()
+        return (self.start > other_time.get_end())
 
     def get_step_mjd(self):
         """
@@ -371,6 +373,7 @@ class PyTime(ITime):
         """
         if self.is_span:
             return self.step
+        return None
 
     def get_mjd(self):
         """
@@ -380,5 +383,4 @@ class PyTime(ITime):
         """
         if not self.is_span:
             return self.start
-        else:
-            return 0.5*(self.start+self.end)
+        return 0.5*(self.start+self.end)

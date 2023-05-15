@@ -67,6 +67,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         """
         return self.current_time
 
+    # pylint: disable=unnecessary-pass
     def announce_observed_values(self, descriptions):
         """
         Tells model that it can expect to be asked for model values corresponding to the observations
@@ -142,6 +143,7 @@ class LorenzStochModelInstance(IStochModelInstance):
         """
         return self.state
 
+# pylint: disable=unused-argument
 def _lorenz_function_(t, x, params):
     """
     Function which computes the derivative of the current state at time t.

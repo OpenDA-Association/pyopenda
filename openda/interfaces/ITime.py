@@ -60,6 +60,6 @@ class ITime:
 
     def __str__(self):
         if self.get_is_span():
+            # pylint: disable=consider-using-f-string
             return "[%s, %s]"%(self.get_start(),self.get_end())
-        else:
-            return str(self.get_start())
+        return str(self.get_start())

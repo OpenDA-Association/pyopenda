@@ -1,4 +1,4 @@
-import openda.interfaces.IModelInstance as IModelInstance
+from openda.interfaces.IModelInstance import IModelInstance
 
 
 class IStochModelInstance(IModelInstance):
