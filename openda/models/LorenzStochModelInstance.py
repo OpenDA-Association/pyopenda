@@ -6,16 +6,13 @@ Created on Thu Nov 22 11:32:08 2018
 
 @author: hegeman
 """
-
 from math import sqrt
 import numpy as np
-from openda.costFunctions.JObjects import PyTime
-from openda.interfaces.IStochModelInstance import IStochModelInstance
-import openda.utils.py4j_utils as utils
 from scipy.integrate import ode
 from scipy.stats import norm
-
-
+import openda.utils.py4j_utils as utils
+from openda.costFunctions.JObjects import PyTime
+from openda.interfaces.IStochModelInstance import IStochModelInstance
 
 
 class LorenzStochModelInstance(IStochModelInstance):

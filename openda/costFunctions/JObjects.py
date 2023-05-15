@@ -12,8 +12,8 @@ Created on Tue Nov 20 15:27:05 2018
 
 @author: hegeman
 """
-import warnings
 import os
+import warnings
 from py4j.java_gateway import JavaGateway
 import openda.utils.py4j_utils as utils
 from openda.interfaces.IModelFactory import IModelFactory

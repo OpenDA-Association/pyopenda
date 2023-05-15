@@ -9,8 +9,8 @@ Created on Tue Nov 20 15:33:06 2018
 """
 
 import numpy as np
-from openda.costFunctions.JObjects import PyTime as Time
 import openda.utils.py4j_utils as utils
+from openda.costFunctions.JObjects import PyTime as Time
 
 
 class GenericEnsembleKalmanFilter:

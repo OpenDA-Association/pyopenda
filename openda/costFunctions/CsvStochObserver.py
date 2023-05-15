@@ -6,10 +6,11 @@ Created on Mon Nov 26 10:49:24 2018
 
 @author: hegeman
 """
-import numpy as np
 import os
+import numpy as np
 import pandas as pd
 from scipy.stats import norm
+
 
 class CsvStochObserver:
     """

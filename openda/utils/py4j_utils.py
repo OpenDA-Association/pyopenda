@@ -9,11 +9,12 @@ Created on Tue Nov 20 15:16:14 2018
 @author: hegeman
 """
 
+import warnings
 import numpy as np
 import pandas as pd
-from py4j.java_gateway import JavaGateway
 from py4j.java_collections import JavaArray
-import warnings
+from py4j.java_gateway import JavaGateway
+
 
 try:
     gateway = JavaGateway()   # connect to the JVM

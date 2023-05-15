@@ -10,7 +10,9 @@ Created on Wed Oct 10 14:35:15 2018
 """
 import math
 import numpy as np
-from scipy.linalg import lu_factor, lu_solve
+from scipy.linalg import lu_factor
+from scipy.linalg import lu_solve
+
 
 ITER_PRINT = 0
 

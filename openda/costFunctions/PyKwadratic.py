@@ -13,6 +13,7 @@ from openda.costFunctions.model_instance import model_instance
 from openda.costFunctions.simulation_kwadratic_cost_function import simulation_kwadratic_cost_function
 from openda.costFunctions.stoch_observer import stoch_observer
 
+
 class PyKwadratic:
     """
     Class for linking a very simple Python model, observer and cost function to the Dud algorithm.

@@ -8,11 +8,11 @@ Created on Wed Oct 10 14:39:10 2018
 
 @author: hegeman
 """
-import warnings
 import os
+import warnings
 from py4j.java_gateway import JavaGateway
-
 import openda.utils.py4j_utils as utils
+
 
 try:
     gateway = JavaGateway()   # connect to the JVM
