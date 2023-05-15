@@ -12,8 +12,9 @@ import numpy as np
 from openda.costFunctions.JObjects import PyTime
 from openda.interfaces.IStochModelInstance import IStochModelInstance
 import openda.utils.py4j_utils as utils
-from scipy.stats import norm
 from scipy.integrate import ode
+from scipy.stats import norm
+
 
 
 
