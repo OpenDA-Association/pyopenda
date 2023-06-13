@@ -16,32 +16,15 @@ class LorenzStochModelFactory:
     """
     Factory for making Lorenz model instances
     """
-    def __init__(self, config, scriptdir):
+    def __init__(self, config):
         """
         :param config: dictionary used for configuration.
-        :param scriptdir: location of the main .oda file.
         """
-        xml_path = os.path.join(scriptdir, config.get('workingDirectory'), config.get('configFile'))
-        schema = xmlschema.XMLSchema('http://schemas.openda.org/toymodels/LorenzConfig.xsd')
-        self.config = schema.decode(xml_path)
-
-        names = self.config.get('parameters').get('@names').split(',')
-        param_values = [float(val) for val in self.config.get('parameters').get('$').strip('[]').split(',')]
-        param_uncertainty = [float(val) for val in self.config.get('parameterUncertainty')
-                             .get('$').strip('[]').split(',')]
-        param = dict(zip(names, param_values))
-        param_uncertainty = dict(zip(names, param_uncertainty))
-
-        state = [float(val) for val in self.config.get('initialState').strip('[]').split(',')]
-        state_uncertainty = [float(val) for val in self.config.get('initialStateUncertainty')
-                             .strip('[]').split(',')]
-
-        sys_noise = self.config.get('systemNoise').strip('{[]}').split('],[')
-        sys_mean = [float(val) for val in sys_noise[0].split(',')]
-        sys_std = [float(val) for val in sys_noise[1].split(',')]
-
-        span = [float(val) for val in self.config.get('simulationTimespan').strip('[]').split(',')]
-        self.model_attributes = (param, param_uncertainty, state, state_uncertainty, sys_mean, sys_std, span)
+        if config is None:
+            self.config = {'sigma': 10, 'rho': 28.0, 'beta': 8.0/3.0, 't_start': 0.0, 't_stop': 30.0, 't_step': 0.025,
+                           'state': [1.508870, -1.531271, 25.46091]}
+        else:
+            self.config = config.copy()
 
     def get_instance(self, noise_config, main_or_ens):
         """
@@ -51,4 +34,4 @@ class LorenzStochModelFactory:
         :param main_or_ens: determines the ouput level of the model.
         :return: the stochastic Model instance.
         """
-        return LorenzStochModelInstance(self.model_attributes, noise_config, main_or_ens)
+        return LorenzStochModelInstance(self.config, noise_config, main_or_ens)

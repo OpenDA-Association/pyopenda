@@ -19,22 +19,24 @@ class LorenzStochModelInstance(IStochModelInstance):
     """
     Instance of a three point Lorenz model.
     """
-    def __init__(self, model_attributes, noise_config, main_or_ens=None):
+    def __init__(self, config, noise_config, main_or_ens=None):
         """
-        :param model_attributes: attributes saved in the model factory.
-        :param noise_config: dictionary as given by EnkfAlgorithm.xml for the noise configuration.
+        :param config: attributes saved in the model factory.
+        :param noise_config: dictionary for the noise configuration.
         :param main_or_ens: determines the ouput level of the model.
         """
-        super().__init__()
-        (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.sys_mean,
-         self.sys_std, self.span) = model_attributes
+        self.state = config['state']
+        self.span = [config['t_start'], config['t_step'], config['t_stop']]
+        self.params = [config['sigma'], config['rho'], config['beta']]
+        self.state_uncertainty = [0.5, 0.5, 0.5]
+
 
         if noise_config is None:
             if main_or_ens == "main":
-                noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
+                noise_config = {'stochParameter':False, 'stochForcing':False, 'stochInit':False}
             elif main_or_ens == "ens":
-                noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
-        if noise_config.get('@stochInit'):
+                noise_config = {'stochParameter':False, 'stochForcing':True, 'stochInit':True}
+        if noise_config.get('stochInit'):
             realizations = [norm(loc=mean, scale=std).rvs() for mean,
                             std in zip(self.state, self.state_uncertainty)]
             self.state = realizations.copy()
@@ -45,9 +47,9 @@ class LorenzStochModelInstance(IStochModelInstance):
             self.param = realizations
 
         self.auto_noise = noise_config.get('@stochForcing')
+        self.config = config
 
-
-        self.current_time = PyTime(self.span[0])
+        self.current_time = PyTime(self.config['t_start'])
         self.state = np.array(self.state)
 
     def get_time_horizon(self):
@@ -56,7 +58,7 @@ class LorenzStochModelInstance(IStochModelInstance):
 
         :return: the time horizon (containing begin and end time).
         """
-        return PyTime(self.span[0], self.span[2])
+        return PyTime(self.span[0], self.span[1], self.span[2])
 
     def get_current_time(self):
         """
@@ -87,8 +89,12 @@ class LorenzStochModelInstance(IStochModelInstance):
         :param time: Time to compute to.
         :return:
         """
-        end_time = time.get_start()
-        solver = ode(_lorenz_function_).set_integrator('dopri5').set_f_params(list(self.param.values()))
+        if isinstance(time, float):
+            end_time = time
+        else:
+            end_time = time.get_start()
+
+        solver = ode(_lorenz_function_).set_integrator('dopri5').set_f_params(self.params)
         solver = solver.set_initial_value(self.state, self.current_time.get_start())
         new_state = self.state.copy()
         t = self.current_time.get_start()
