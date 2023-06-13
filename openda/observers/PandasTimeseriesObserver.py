@@ -1,7 +1,7 @@
-from openda.interfaces import IStochObserver, IObservationDescription
+from openda.interfaces.IStochObserver import IStochObserver
 import pandas as pd
 
-class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
+class PandasTimeseriesObserver(IStochObserver):
 
     def __init__(self, data, std, indices):
         self.data = data
@@ -13,7 +13,6 @@ class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
         self.indices = indices
         self.std = std
 
-
     def create_selection(self, model_span):
         """
         Create a new observer, containing a selection of the present observer,
@@ -22,9 +21,11 @@ class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
         :param model_span: time span with selection.
         :return: stochastic observer containing the required selection.
         """
+        t_start = model_span.get_start()
+        t_end = model_span.get_end()
+        data_sel = self.data[self.index >= t_start and self.index <= t_end]
 
-
-        raise NotImplementedError("Function not implemented.")
+        return PandasTimeseriesObserver(data_sel, self.std, self.indices)
 
     def get_times(self):
         """
@@ -32,7 +33,7 @@ class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
 
         :return: some type of vector containing the times
         """
-        raise NotImplementedError("Function not implemented.")
+        return list(self.data.index)
 
     def get_count(self):
         """
@@ -40,7 +41,7 @@ class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
 
         :return: the number of observations.
         """
-        raise NotImplementedError("Function not implemented.")
+        return len(self.data) * len(self.data.index)
 
     def get_observation_descriptions(self):
         """
@@ -48,7 +49,7 @@ class PandasTimeseriesObserver(IStochObserver, IObservationDescription):
 
         :return: observation descriptions which are compatible with the used model instance
         """
-        raise NotImplementedError("Function not implemented.")
+        return self
 
     def get_sqrt_covariance(self):
         """

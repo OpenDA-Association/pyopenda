@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Instance of a three varible Lorenz model, usable by the ensemble kalman filter algorithm.
-Created on Thu Nov 22 11:32:08 2018
 
-@author: hegeman
 """
 from math import sqrt
 import numpy as np
@@ -42,9 +40,9 @@ class LorenzStochModelInstance(IStochModelInstance):
             self.state = realizations.copy()
         if noise_config.get('@stochParameter'):
             realizations = [norm(loc=mean, scale=std).rvs() for mean,
-                            std in zip(list(self.param.values()),
-                                       list(self.param_uncertainty.values()))]
-            self.param = realizations
+                            std in zip(list(self.params),
+                                       list(self.param_uncertainty))]
+            self.params = realizations
 
         self.auto_noise = noise_config.get('@stochForcing')
         self.config = config

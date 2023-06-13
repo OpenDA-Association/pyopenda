@@ -2,13 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Factory for making Lorenz model instances, usable by the ensemble kalman filter algorithm.
-Created on Thu Nov 22 11:29:15 2018
 
-@author: hegeman
 """
 
-import os
-import xmlschema
 from openda.models.LorenzStochModelInstance import LorenzStochModelInstance
 
 

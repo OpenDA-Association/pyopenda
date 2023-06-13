@@ -4,7 +4,6 @@ import unittest as need_assertions
 import numpy as np
 import matplotlib.pyplot as plt
 
-from openda.models.LorenzStochModelInstance import LorenzStochModelInstance
 from openda.models.LorenzStochModelFactory import LorenzStochModelFactory
 
 assertions = need_assertions.TestCase('__init__')
@@ -36,5 +35,3 @@ def test_model():
     plt.plot(x2[:, 1])
     plt.plot(x3[:, 1])
     plt.show()
-
-
