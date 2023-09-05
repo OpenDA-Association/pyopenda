@@ -68,7 +68,7 @@ class PandasObservationDescriptions(IObservationDescription):
 
         # TODO use time selection of stoch observer
 
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_exchange_items(self):
         """
@@ -76,7 +76,7 @@ class PandasObservationDescriptions(IObservationDescription):
          Get the exchange items describing the measures available in the stoch. observer.
          :return All exchange items in the stoch. observer.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_properties(self, key: str):
         """"
@@ -91,7 +91,7 @@ class PandasObservationDescriptions(IObservationDescription):
         elif key == "time":
             return self.times
         else:
-            raise NotImplemented("Key is not known only id and time are supported.")
+            raise NotImplementedError("Key is not known only id and time are supported.")
 
     def get_property_keys(self):
         """"
@@ -104,13 +104,13 @@ class PandasObservationDescriptions(IObservationDescription):
         """"
         return Number of properties.
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_observation_count(self):
         """"
         return Number of observations
         """
-        raise NotImplemented("Function not implemented.")
+        raise NotImplementedError("Function not implemented.")
 
     def get_times(self):
         """"
