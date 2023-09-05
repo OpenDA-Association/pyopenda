@@ -155,13 +155,17 @@ class PandasObserver:
                                       "must provide this file yourself")
 
             # File can contain multiple pandas objects. Check whether proved store exists
-            stores = pd.HDFStore(hdf5_input, mode='r')
-            if store_name not in stores:
-                raise ValueError("selected store_name: " + str(store_name) +
-                                 " does not exist in HDF5 file: " + str(hdf5_input))
+            hdf5_data = None
+            if False: #HDF5
+                stores = pd.HDFStore(hdf5_input, mode='r')
+                if store_name not in stores:
+                    raise ValueError("selected store_name: " + str(store_name) +
+                                     " does not exist in HDF5 file: " + str(hdf5_input))
+                    # Read values
+                    hdf5_data = pd.read_hdf(hdf5_input, key=store_name)
+            else:
+                hdf5_data = pd.read_csv(hdf5_input, sep=';', header=0, index_col=0, parse_dates=["time"])
 
-            # Read values
-            hdf5_data = pd.read_hdf(hdf5_input, key=store_name)
             self.all_timeseries = {}
             if "std" in config:
                 std_obs = config["std"]
