@@ -357,7 +357,11 @@ class PandasObserver:
 
         :return: the realizations.
         """
-        raise NotImplementedError("not implemented")
+        vals = self.get_values()
+        stds = self.get_standard_deviation()
+        noises = np.random.normal(0.0, 1.0, len(stds))
+        realization = [val + std * noise for val, std, noise in zip(vals, stds, noises)]
+        return realization
 
     def get_values(self):
         """
