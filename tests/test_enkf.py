@@ -13,7 +13,7 @@ def test():
     model_factory = SaintVenantModelFactory()
     obs_config = {
         'store_name': None,
-        'working_dir': 'C:/Users/arons/Documents/GitHub/pyopenda',
+        'working_dir': './../',
         'config_file': 'obs (simulated).csv',
         'labels': ['h0', 'h25', 'h50', 'h75', 'h99'],
         'std': [0.2, 0.3, 0.3, 0.3, 0.3]
