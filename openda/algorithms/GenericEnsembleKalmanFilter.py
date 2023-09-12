@@ -35,7 +35,7 @@ class GenericEnsembleKalmanFilter:
         self.current_time = Time(now.get_start(), now.get_end())
 
         model_span = self.main_model.get_time_horizon()
-        model_span = Time(model_span.get_start(), model_span.get_end())
+        model_span = Time(model_span.get_start(), None, model_span.get_end())
         selection = self.observer.create_selection(model_span)
         self.analysis_times = utils.input_to_time_list(selection.get_times(), Time)
 
@@ -146,7 +146,7 @@ class GenericEnsembleKalmanFilter:
         :return:
         """
         self.this_step += 1
-        time = self.analysis_times[self.this_step]
+        time = self.analysis_times[self.this_step].get_start()
 
         self.selection = self.observer.create_selection(time)
         if time.after(self.current_time):

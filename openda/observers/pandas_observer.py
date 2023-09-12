@@ -19,6 +19,12 @@ class TimeSeries:
         self.std = std
 
     def create_time_selection(self, span_start, span_stop):
+        # Unpack span_start and span_stop if necessary
+        try:
+            span_start = span_start.get_start()
+            span_stop = span_stop.get_start()
+        except:
+            pass
         eps = np.timedelta64(1, 's')
         sel_times = []
         sel_values = []
@@ -349,7 +355,13 @@ class PandasObserver:
 
         :return: the covariance matrix as numpy array.
         """
-        raise NotImplementedError("not implemented")
+        n = len(self.labels)
+        R = np.zeros((n,n))
+        for i, label in enumerate(self.labels):
+            R[i,i] = self.all_timeseries[label].get_std()[0] ** 2
+
+        return R
+        # raise NotImplementedError("not implemented")
 
     def get_realizations(self):
         """

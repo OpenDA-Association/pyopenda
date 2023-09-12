@@ -137,7 +137,7 @@ def input_to_py_list(obj):
     elif isinstance(obj, np.ndarray):
         obj = obj.squeeze().tolist()
     elif isinstance(obj, list):
-        obj = None
+        pass
     elif IVector_class.isInstance(obj):
         obj = j_array_to_py_list(obj.getValues())
     return obj
@@ -190,9 +190,6 @@ def input_to_time_list(obj, t_class):
     n_times = len(time_list)
     result = [None]*n_times
     for (i, time) in enumerate(time_list):
-        if ITime_class.isInstance(time):
-            result[i] = t_class(time.getBeginMJD(), time.getEndMJD())
-        else:
             result[i] = t_class(time)
     return result
 
