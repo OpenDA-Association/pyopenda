@@ -12,7 +12,7 @@ def test1():
         'store_name': None,
         'working_dir': './../',
         'config_file': 'obs (simulated).csv',
-        'labels': ['h0', 'h25', 'h50', 'h75', 'h99'],
+        'labels': ['0', '50', '100', '150', '198'],
         'std': [0.2, 0.3, 0.3, 0.3, 0.3]
     }
 

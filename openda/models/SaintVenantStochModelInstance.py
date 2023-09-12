@@ -3,6 +3,7 @@ from scipy.sparse.linalg import spsolve
 from scipy.sparse import spdiags
 from scipy.stats import norm
 from openda.costFunctions.JObjects import PyTime
+import openda.utils.py4j_utils as utils
 
 class SaintVenantStochModelInstance:
     """
@@ -37,7 +38,9 @@ class SaintVenantStochModelInstance:
         self.auto_noise = noise_config.get('@stochForcing')
 
         self.current_time = PyTime(self.span[0])
+        self.state = np.array(self.state)
         self.t = 0
+        self.N = 0
 
     def get_time_horizon(self):
         """
@@ -45,7 +48,7 @@ class SaintVenantStochModelInstance:
 
         :return: the time horizon (containing begin and end time).
         """
-        return PyTime(self.span[0], self.span[2])
+        return PyTime(self.span[0], None, self.span[2])
 
     def get_current_time(self):
         """
@@ -65,7 +68,7 @@ class SaintVenantStochModelInstance:
         :param descriptions: an ObservationDescriptions object with meta data for the observations.
         :return:
         """
-        raise NotImplementedError("Function not implemented.")
+        pass#raise NotImplementedError("Function not implemented.")
 
     def compute(self, time):
         """
@@ -87,23 +90,26 @@ class SaintVenantStochModelInstance:
             rhs = B.dot(x)
             rhs[0] = 2.5 * np.sin(2.0*np.pi/(12.*60.*60.)*self.t) #Left boundary
             newx = spsolve(A, rhs)
+
+            alpha = np.exp( -(self.span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
+            self.N = alpha * self.N + np.random.normal(0, 0.05)
+            newx[0] += self.N
+
         self.current_time = PyTime(end_time)
         self.state = newx
 
-    def get_observations(self, xlocs_waterlevel, xlocs_velocity=None):
+    def get_observations(self, description):
         """
         Get model values corresponding to the descriptions.
 
         :param descriptions: An ObservationDescriptions object with meta data for the observations
         :return: python list with the model values corresponding to the descriptions
         """
-        dx = self.param['L']/(self.param['n']+0.5)
-        if xlocs_velocity is None:
-            idx = (np.round((np.array(xlocs_waterlevel))/dx)*2).astype(int)
-        else:
-            idx = np.hstack((np.round((np.array(xlocs_waterlevel))/dx)*2,np.round((np.array(xlocs_velocity)-0.5*dx)/dx)*2+1)).astype(int)
-        return self.state[idx]
-    
+        # If necessary, first convert to integers
+        try:
+            return self.state[list(map(int,description.observation_id))]
+        except:
+            return self.state[description]
 
     def update_state(self, state_array, main_or_ens):
         """
@@ -114,10 +120,10 @@ class SaintVenantStochModelInstance:
         :return:
         """
         if main_or_ens == "ens":
-            delta = state_array.copy()
+            delta = utils.input_to_py_list(state_array)
             self.state += delta
         elif main_or_ens == "main":
-            delta_mean = state_array.copy()
+            delta_mean = utils.input_to_py_list(state_array)
             self.state = delta_mean
 
 

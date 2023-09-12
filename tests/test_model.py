@@ -21,7 +21,6 @@ def plot_series(t, series_data, xlocs_waterlevel, xlocs_velocity):
         ax.set_xlabel("time")
         ax.set_ylabel(ylabels[i])
         ax.set_title(titles[i])
-        ax.xaxis.set_major_locator(plt.MaxNLocator(9))
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d, %H:%M'))
         ax.tick_params(axis='x', labelrotation = 70)
         plt.tight_layout()
@@ -37,29 +36,32 @@ def test():
     xlocs_waterlevel = [0, 25*1e3, 50*1e3, 75*1e3, 99*1e3] # Locations (in m) where Time Series of Waterlevel is made
     xlocs_velocity = [0, 25*1e3, 50*1e3, 75*1e3] # Locations (in m) where Time Series of Velocity is made
     
+    dx = model.param['L']/(model.param['n']+0.5)
+    description = (np.round((np.array(xlocs_waterlevel))/dx)*2).astype(int)
+    # When also using velocity use:
+    # description = np.hstack((np.round((np.array(xlocs_waterlevel))/dx)*2,np.round((np.array(xlocs_velocity)-0.5*dx)/dx)*2+1)).astype(int)
+
     times = []
-    i = 0
     next_time = model.span[0]
     while next_time < model.span[2]:
         times.append(next_time)
         next_time = next_time +  model.span[1]
 
-    length = len(xlocs_waterlevel) #+ len(xlocs_velocity)
-    series_data=np.zeros((length,len(times)))
+    series_data=np.zeros((len(description),len(times)))
 
     for i, next_time in enumerate(times):
         model.compute(PyTime(next_time))
-        series_data[:,i]=model.get_observations(xlocs_waterlevel)#, xlocs_velocity)
+        series_data[:,i]=model.get_observations(description)
     
     plot_series(times, series_data, xlocs_waterlevel, xlocs_velocity)
 
-    ## Exporting observations (Waterlevels only) ##
-    obs = np.vstack((times, series_data[:len(xlocs_waterlevel),:])).T
+    ## Exporting observations ##
+    obs = np.vstack((list(map(str, times)), series_data)).T
     df = pd.DataFrame(obs)
 
-    header = ['time']
-    for loc in xlocs_waterlevel:
-        header.append(f'h{loc*1e-3:.0f}')
+    header = ["time"]
+    for i in description:
+        header.append(i)
     df.columns = header
     df.to_csv("obs (simulated).csv", sep=';', index=False)
 

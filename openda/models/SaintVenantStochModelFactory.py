@@ -13,7 +13,7 @@ class SaintVenantModelFactory:
         Constructor
         """
         names = ["D", "f", "g", "L", "n"]
-        param_values = [20.0, 2.e-4, 9.81, 100.e3, 100]
+        param_values = [20.0, 20.e-5, 9.81, 100.e3, 100]
         param_uncertainty = [0, 0, 0, 0, 0]
 
         param = dict(zip(names, param_values))
