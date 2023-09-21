@@ -81,7 +81,7 @@ class PandasObservationDescriptions(IObservationDescription):
         raise NotImplementedError("Function not implemented.")
 
     def get_properties(self, key: str):
-        """"
+        """
         Get properties (values) that correspond to a given key.
 
         :param key: key for which the value is asked
@@ -90,20 +90,20 @@ class PandasObservationDescriptions(IObservationDescription):
 
         if key == "id":
             return self.observation_id
-        elif key == "time":
+        if key == "time":
             return self.times
-        else:
-            raise NotImplementedError("Key is not known only id and time are supported.")
+
+        raise NotImplementedError("Key is not known only id and time are supported.")
 
     def get_property_keys(self):
-        """"
+        """
         return All keys of the observation descriptions.
         """
 
         return ["id", "time"]
 
     def get_property_count(self):
-        """"
+        """
         return Number of properties.
         """
         raise NotImplementedError("Function not implemented.")
@@ -115,7 +115,7 @@ class PandasObservationDescriptions(IObservationDescription):
         raise NotImplementedError("Function not implemented.")
 
     def get_times(self):
-        """"
+        """
         Get all different times in increasing order. There is at least one observation for each time.
         It is likely that observer.createSelection(time[i]) will be used to walk through the
         observations. The implementation of the stochobserver should garantee that al observations are
@@ -129,7 +129,9 @@ class PandasObserver:
     """
     A stochastic observer which uses pandas to read observations from a csv file.
     """
-
+    # pylint: disable-msg=too-many-locals
+    # pylint: disable-msg=too-many-branches
+    # pylint: disable-msg=too-many-statements
     def __init__(self, config=None, scriptdir=None, clone=None):
         """
         :param config: dictionary used for configuration.
@@ -141,7 +143,7 @@ class PandasObserver:
         # TODO make a dict from clone!
 
         if clone is None:
-            store_name = config['store_name']
+            # store_name = config['store_name']
             working_dir = config['working_dir']
             config_file = config['config_file']
             labels = config['labels']
@@ -157,7 +159,7 @@ class PandasObserver:
                                       "must provide this file yourself")
 
             # File can contain multiple pandas objects. Check whether proved store exists
-            hdf5_data = None
+            # hdf5_data = None
             # if False: #HDF5
             #     stores = pd.HDFStore(hdf5_input, mode='r')
             #     if store_name not in stores:
@@ -182,7 +184,7 @@ class PandasObserver:
 
                 column = pd.DataFrame(hdf5_data.loc[:, label])
                 column_clean = column.dropna()  # TODO
-                times = [time for time in column_clean.index.values]
+                times = list(column_clean.index.values)
                 # column_clean.values is list of lists, hence make it flat
                 values = [item for row in column_clean.values for item in row]
                 self.all_timeseries[label] = TimeSeries(times, values, [std] * len(values))
@@ -215,14 +217,14 @@ class PandasObserver:
 
             self.all_timeseries = {}
             for label in parent_observer.labels:
-                if any([label == l2 for l2 in sel_label]):              # label in any sel_label:
+                if label in sel_label:              # label in any sel_label:
                     if isinstance(span_start, PyTime):
                         span_start = span_start.get_start()
                     if isinstance(span_stop, PyTime):
                         span_stop = span_stop.get_start()
                     sel_timeseries = parent_observer.all_timeseries[label].create_time_selection(span_start, span_stop)
                     # Apply masks
-                    if any([label == l2 for l2 in masks]):  # label in masks:
+                    if label in masks.keys():  # label in masks:
                         sel_timeseries = sel_timeseries.create_mask_selection(masks[label])
                     self.all_timeseries[label] = sel_timeseries
             self.labels = self.all_timeseries.keys()
@@ -235,59 +237,19 @@ class PandasObserver:
                 str_missing = ",".join(missing)
                 raise ValueError("could not match all observation id's (" + str_missing + ")")
 
-    def __inspan(self, time_span, time):
-
-        eps = np.timedelta64(1, 's')
-
-        in_span = False
-        span_start = time_span.get_start()
-        span_stop = time_span.get_end()
-        span_step = time_span.get_step_mjd()
-
-        if span_start - eps <= time <= span_stop + eps:
-            frac = abs((time - span_start) / span_step)
-            delta = abs(frac - int(frac + 0.5))
-            if delta < 1.0e-5:
-                in_span = True
-        return in_span
-
-    def __match_times(self, time_span, times):
-        indx = []
-        for i_time in range(len(times)):
-            time = times[i_time]
-            if self.__inspan(time_span, time.get_mjd()):
-                indx.append(i_time)
-        return indx
-
-    def create_selection(self, property, criterion):
-        """
-        Create a new observer containing a selection of the present observer
-        based on the given time span.
-
-        :param property: property to select on
-        :param criterion: selection criterion corresponding to "property"
-
-        :return: stochastic observer containing the required selection.
-        """
-
-        if property == "id":
-            return PandasObserver(clone=[None, self, criterion, None])
-        else:
-            raise ValueError("only property id is supported not :" + property)
-
-    def create_selection(self, time_span=None, property=None, criterion=None, masks=None):
+    def create_selection(self, time_span=None, prop=None, criterion=None, masks=None):
         """
         Create a new observer containing a selection of the present observer
         based on the given time span.
 
         :param time_span: time span with selection.
-        :param property: property to select on
+        :param prop: property to select on
         :param criterion: selection criterion corresponding to "property"
         :param masks: dictionary with masks for timeseries
         :return: stochastic observer containing the required selection.
         """
-        if property and property != "id":
-            raise ValueError("only propery id is suppored not :" + property)
+        if prop and prop != "id":
+            raise ValueError("only propery id is suppored not :" + prop)
 
         return PandasObserver(clone=[time_span, self, criterion, masks])
 
@@ -358,11 +320,11 @@ class PandasObserver:
         :return: the covariance matrix as numpy array.
         """
         n = len(self.labels)
-        R = np.zeros((n,n))
+        r_mat = np.zeros((n, n))
         for i, label in enumerate(self.labels):
-            R[i,i] = self.all_timeseries[label].get_std()[0] ** 2
+            r_mat[i, i] = self.all_timeseries[label].get_std()[0] ** 2
 
-        return R
+        return r_mat
 
     def get_realizations(self):
         """
@@ -390,7 +352,7 @@ class PandasObserver:
     def get_values2(self, user_labels):
         """ Gets the values for one or more labels"""
         values = []
-        for label, idx in zip(user_labels, range(len(user_labels))):
+        for label in user_labels:
             values += [self.all_timeseries[label].get_values()]
 
         for i in range(1, len(values)):
