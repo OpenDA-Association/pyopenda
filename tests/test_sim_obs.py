@@ -10,7 +10,7 @@ assertions = need_assertions.TestCase('__init__')
 def test1():
     config = {
         'store_name': None,
-        'working_dir': './../',
+        'working_dir': './../observations',
         'config_file': 'obs (simulated).csv',
         'labels': ['0', '50', '100', '150', '198'],
         'std': [0.2, 0.3, 0.3, 0.3, 0.3]
