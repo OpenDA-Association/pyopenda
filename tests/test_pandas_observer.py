@@ -8,12 +8,12 @@ from openda.costFunctions.JObjects import PyTime
 assertions = need_assertions.TestCase('__init__')
 
 def test1():
-    config = {
+    obs_config = {
         'store_name': None,
-        'working_dir': '.',
-        'config_file': 'obs.csv',
-        'labels': ['obs1'],
-        'std': [0.3, 0.4]
+        'working_dir': './../observations',
+        'config_file': 'obs (simulated).csv',
+        'labels': ['0', '6', '12', '20'],
+        'std': [0.6, 0.6, 0.6, 0.6]
     }
 
     obs = PandasObserver(config=config, scriptdir=os.path.dirname(__file__))
