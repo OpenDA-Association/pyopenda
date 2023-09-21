@@ -17,8 +17,7 @@ class SaintVenantStochModelInstance:
         """
         Constructor
         """
-        (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.sys_mean,
-         self.sys_std, self.span) = model_attributes
+        (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.span) = model_attributes
 
         if noise_config is None:
             if main_or_ens == "main":
@@ -40,7 +39,6 @@ class SaintVenantStochModelInstance:
         self.current_time = PyTime(self.span[0])
         self.state = np.array(self.state)
         self.t = 0
-        self.N = 0
 
     def get_time_horizon(self):
         """
@@ -79,7 +77,8 @@ class SaintVenantStochModelInstance:
         :return:
         """
         end_time = time.get_start()
-        A, B = _get_model(self.param, self.span)
+        A, B, phi = _get_model(self.param, self.span)
+        std = np.sqrt(1-phi**2) * 0.2 # Std of model noise chosen according to desired std of AR(1)
         newx = self.state
         t_now = self.current_time.get_start()
         t_step = self.span[1]
@@ -88,12 +87,10 @@ class SaintVenantStochModelInstance:
             self.t += self.span[1]/np.timedelta64(1,'s')
             x = self.state.copy()
             rhs = B.dot(x)
-            rhs[0] = 2.5 * np.sin(2.0*np.pi/(12.*60.*60.)*self.t) #Left boundary
+            rhs[0] += -0.25 + 1.25 * np.sin(2.0*np.pi/(12.42*60.*60.)*self.t) # Left boundary
+            if self.auto_noise:
+                rhs[-1] += norm(loc=0, scale=std).rvs() # White noise
             newx = spsolve(A, rhs)
-
-            alpha = np.exp( -(self.span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
-            self.N = alpha * self.N + np.random.normal(0, 0.05)
-            newx[0] += self.N
 
         self.current_time = PyTime(end_time)
         self.state = newx
@@ -106,10 +103,15 @@ class SaintVenantStochModelInstance:
         :return: python list with the model values corresponding to the descriptions
         """
         # If necessary, first convert to integers
-        try:
-            return self.state[list(map(int,description.observation_id))]
-        except:
-            return self.state[description]
+        if isinstance(description, np.ndarray):
+            description = description.tolist()
+        if isinstance(description, list):
+            if isinstance(description[0], str):
+                description = list(map(int,description))
+        else:
+            description = list(map(int,description.observation_id))
+     
+        return self.state[description]
 
     def update_state(self, state_array, main_or_ens):
         """
@@ -142,10 +144,13 @@ def _get_model(param, span):
     A and B are tri-diagonal sparce matrices, and have the order h[0], u[0], ..., h[n], u[n]  
     """
     n=param['n']
-    Adata=np.zeros((3,2*n))
-    Bdata=np.zeros((3,2*n))
+    Adata=np.zeros((3,2*n+1))
+    Bdata=np.zeros((3,2*n+1))
     Adata[1,0]=1. # Left boundary
     Adata[1,2*n-1]=1. # Right boundary
+    Adata[1,2*n] = 1
+    phi = np.exp( -(span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
+    Bdata[1,2*n] = phi
     # i=1,3,5,... du/dt  + g dh/sx + f u = 0
     #  u[n+1,m] + 0.5 g dt/dx ( h[n+1,m+1/2] - h[n+1,m-1/2]) + 0.5 dt f u[n+1,m] 
     #= u[n  ,m] - 0.5 g dt/dx ( h[n  ,m+1/2] - h[n  ,m-1/2]) - 0.5 dt f u[n  ,m]
@@ -174,6 +179,9 @@ def _get_model(param, span):
         Bdata[1,i  ]= 1.0
         Bdata[2,i+1]= -temp1    
     # Build sparse matrix
-    A=spdiags(Adata,np.array([-1,0,1]),2*n,2*n).tocsr()
-    B=spdiags(Bdata,np.array([-1,0,1]),2*n,2*n).tocsr()
-    return A, B
+    A=spdiags(Adata,np.array([-1,0,1]),2*n+1,2*n+1).tolil()
+    A[0, -1]=-1
+
+    B=spdiags(Bdata,np.array([-1,0,1]),2*n+1,2*n+1)
+    
+    return A.tocsr(), B.tocsr(), phi

@@ -19,17 +19,13 @@ class TimeSeries:
         self.std = std
 
     def create_time_selection(self, span_start, span_stop):
-        # Unpack span_start and span_stop if necessary
-        try:
-            span_start = span_start.get_start()
-            span_stop = span_stop.get_start()
-        except:
-            pass
         eps = np.timedelta64(1, 's')
         sel_times = []
         sel_values = []
         sel_std = []
         for time, value, std in zip(self.times, self.values, self.std):
+            if isinstance(time, str):
+                time = np.datetime64(time)
             if span_start - eps <= time <= span_stop + eps:
                 sel_times.append(time)
                 sel_values.append(value)
@@ -218,6 +214,10 @@ class PandasObserver:
             self.all_timeseries = {}
             for label in parent_observer.labels:
                 if any([label == l2 for l2 in sel_label]):              # label in any sel_label:
+                    if isinstance(span_start, PyTime):
+                        span_start = span_start.get_start()
+                    if isinstance(span_stop, PyTime):
+                        span_stop = span_stop.get_start()
                     sel_timeseries = parent_observer.all_timeseries[label].create_time_selection(span_start, span_stop)
                     # Apply masks
                     if any([label == l2 for l2 in masks]):  # label in masks:
@@ -361,7 +361,6 @@ class PandasObserver:
             R[i,i] = self.all_timeseries[label].get_std()[0] ** 2
 
         return R
-        # raise NotImplementedError("not implemented")
 
     def get_realizations(self):
         """
