@@ -12,8 +12,8 @@ def test1():
         'store_name': None,
         'working_dir': './../observations',
         'config_file': 'obs (simulated).csv',
-        'labels': ['0', '50', '100', '150', '198'],
-        'std': [0.2, 0.3, 0.3, 0.3, 0.3]
+        'labels': ['0', '6', '12', '20'],
+        'std': [0.6, 0.6, 0.6, 0.6]
     }
 
     obs = PandasObserver(config=config, scriptdir=os.path.dirname(__file__))
