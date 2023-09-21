@@ -8,7 +8,7 @@ from openda.costFunctions.JObjects import PyTime
 assertions = need_assertions.TestCase('__init__')
 
 def test1():
-    obs_config = {
+    config = {
         'store_name': None,
         'working_dir': './../observations',
         'config_file': 'obs (simulated).csv',
