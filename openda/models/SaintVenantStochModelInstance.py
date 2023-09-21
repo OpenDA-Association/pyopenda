@@ -24,6 +24,9 @@ class SaintVenantStochModelInstance:
                 noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
             elif main_or_ens == "ens":
                 noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
+            else:
+                raise Exception("main_or_ens must have value 'main' or 'ens'")
+            
         if noise_config.get('@stochInit'):
             realizations = [norm(loc=mean, scale=std).rvs() for mean,
                             std in zip(self.state, self.state_uncertainty)]
