@@ -1,5 +1,3 @@
-import sys;
-sys.path.append("./")
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -109,7 +107,7 @@ def run_simulation(enkf, compare_class):
             index.append(j)
         else:
             results[j, :] = no_filter(enkf)
-        
+
         for i in range(enkf.ensemble_size): # For plotting the ensemble members
             ensemble[i, j, :] = enkf.ensemble[i].get_observations(enkf.observer.labels)
 
@@ -144,7 +142,7 @@ def test():
     ## Initializing ##
     ensemble_size = 50
     enkf, compare_class = initialize(ensemble_size)
-    
+
     ## Running the Model ##
     res = run_simulation(enkf, compare_class)
     (_, results, no_results, obs, _, index) = res
