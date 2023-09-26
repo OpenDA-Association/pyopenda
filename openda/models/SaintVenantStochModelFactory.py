@@ -24,7 +24,7 @@ class SaintVenantModelFactory:
         state_uncertainty[-1] = 0
 
         reftime = np.datetime64('2022-02-18T08:00:00')
-        span = [reftime, np.timedelta64(10,'m'), reftime+np.timedelta64(2,'D')] # [0 seconds, 10 minutes, 2 days]
+        span = [reftime, np.timedelta64(5,'m'), reftime+np.timedelta64(2,'D')] # [0 seconds, 10 minutes, 2 days]
 
         self.model_attributes = (param, param_uncertainty, state, state_uncertainty, span)
 

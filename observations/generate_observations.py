@@ -16,7 +16,7 @@ def plot_series(t, series_data, xlocs_waterlevel, xlocs_velocity):
         ylabels.append("velocity (m/s)")
 
     for i in range(series_data.shape[0]):
-        fig, ax = plt.subplots(figsize=(11,7))
+        _, ax = plt.subplots(figsize=(11,7))
         ax.plot(t, series_data[i,:])
         ax.set_xlabel("time")
         ax.set_ylabel(ylabels[i])
@@ -63,7 +63,8 @@ def test():
     for i in description:
         header.append(i)
     df.columns = header
-    df.to_csv(".\observations\obs (simulated).csv", sep=';', index=False)
+    df.to_csv(r".\observations\obs (simulated).csv", sep=';', index=False)
+
 
 if __name__ == '__main__':
     test()

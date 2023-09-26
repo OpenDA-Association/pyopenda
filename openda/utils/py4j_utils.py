@@ -190,7 +190,7 @@ def input_to_time_list(obj, t_class):
     n_times = len(time_list)
     result = [None]*n_times
     for (i, time) in enumerate(time_list):
-            result[i] = t_class(time)
+        result[i] = t_class(time)
     return result
 
 def input_to_py_descriptions(obj):

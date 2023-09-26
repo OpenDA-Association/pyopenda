@@ -7,7 +7,43 @@ from openda.costFunctions.JObjects import PyTime
 
 assertions = need_assertions.TestCase('__init__')
 
-def test1():
+@pytest.fixture
+def generate_obs():
+    config = {
+        'store_name': None,
+        'working_dir': './../observations',
+        'config_file': 'obs (simulated).csv',
+        'labels': ['0', '6', '12', '20'],
+        'std': [0.6, 0.6, 0.6, 0.6]
+    }
+    obs = PandasObserver(config=config, scriptdir=os.path.dirname(__file__))
+    return obs
+
+def test_loaded_all(generate_obs):
+    vals = generate_obs.get_values()
+    times = generate_obs.get_times()
+    assert len(vals)//len(times) == 4
+
+def test_std(generate_obs):
+    stds = generate_obs.get_standard_deviation()
+    for std in stds:
+        assert std == 0.6
+
+def test_ids(generate_obs):
+    n = len(generate_obs.get_times())
+    obs_descr = generate_obs.get_observation_descriptions()
+    ids = obs_descr.get_properties('id')
+    for i, idx in enumerate(ids):
+        assert idx == generate_obs.labels[i//n]
+
+def test_keys(generate_obs):
+    obs_descr = generate_obs.get_observation_descriptions()
+    keys = obs_descr.get_property_keys()
+    assert keys == ['id', 'time']
+
+
+@pytest.fixture
+def generate_obs_now():
     config = {
         'store_name': None,
         'working_dir': './../observations',
@@ -17,24 +53,26 @@ def test1():
     }
 
     obs = PandasObserver(config=config, scriptdir=os.path.dirname(__file__))
-    vals = obs.get_values()
-    vals_noise = obs.get_realizations()
-    std = obs.get_standard_deviation()
     times = obs.get_times()
-    obs_descr = obs.get_observation_descriptions()
-    keys = obs_descr.get_property_keys()
-    ids = obs_descr.get_properties('id')
-
     obs_now = obs.create_selection(time_span=PyTime(times[0].get_mjd(), times[1].get_mjd()))
-    vals_n = obs_now.get_values()
-    vals_noise_n = obs_now.get_realizations()
-    std_n = obs_now.get_standard_deviation()
-    times_n = obs_now.get_times()
-    obs_descr_n = obs_now.get_observation_descriptions()
-    keys_n = obs_descr_n.get_property_keys()
-    ids_n = obs_descr_n.get_properties('id')
+    return obs_now
 
+def test_loaded_all_now(generate_obs_now):
+    vals_now = generate_obs_now.get_values()
+    assert len(vals_now) == 4
 
+def test_std_now(generate_obs_now):
+    stds_now = generate_obs_now.get_standard_deviation()
+    for std_now in stds_now:
+        assert std_now == 0.6
 
+def test_ids_now(generate_obs_now):
+    obs_descr_now = generate_obs_now.get_observation_descriptions()
+    ids_now = obs_descr_now.get_properties('id')
+    for i, id_now in enumerate(ids_now):
+        assert id_now == generate_obs_now.labels[i]
 
-    assert True
+def test_keys_now(generate_obs_now):
+    obs_descr = generate_obs_now.get_observation_descriptions()
+    keys = obs_descr.get_property_keys()
+    assert keys == ['id', 'time']

@@ -25,7 +25,7 @@ class SaintVenantStochModelInstance:
             elif main_or_ens == "ens":
                 noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
             else:
-                raise Exception("main_or_ens must have value 'main' or 'ens'")
+                raise ValueError("main_or_ens must have value 'main' or 'ens'")
             
         if noise_config.get('@stochInit'):
             realizations = [norm(loc=mean, scale=std).rvs() for mean,
@@ -69,7 +69,7 @@ class SaintVenantStochModelInstance:
         :param descriptions: an ObservationDescriptions object with meta data for the observations.
         :return:
         """
-        pass#raise NotImplementedError("Function not implemented.")
+        return descriptions
 
     def compute(self, time):
         """
@@ -157,11 +157,10 @@ def _get_model(param, span):
     # i=1,3,5,... du/dt  + g dh/sx + f u = 0
     #  u[n+1,m] + 0.5 g dt/dx ( h[n+1,m+1/2] - h[n+1,m-1/2]) + 0.5 dt f u[n+1,m] 
     #= u[n  ,m] - 0.5 g dt/dx ( h[n  ,m+1/2] - h[n  ,m-1/2]) - 0.5 dt f u[n  ,m]
-    g=param['g'];f=param['f'];L=param['L']
     dt = span[1]/np.timedelta64(1,'s')
-    dx = L/(n+0.5)
-    temp1=0.5*g*dt/dx
-    temp2=0.5*f*dt
+    dx = param['L']/(n+0.5)
+    temp1=0.5*param['g']*dt/dx
+    temp2=0.5*param['f']*dt
     for i in np.arange(1,2*n-1,2):
         Adata[0,i-1]= -temp1
         Adata[1,i  ]= 1.0 + temp2
@@ -172,8 +171,7 @@ def _get_model(param, span):
     # i=2,4,6,... dh/dt + D du/dx = 0
     #  h[n+1,m] + 0.5 D dt/dx ( u[n+1,m+1/2] - u[n+1,m-1/2])  
     #= h[n  ,m] - 0.5 D dt/dx ( u[n  ,m+1/2] - u[n  ,m-1/2])
-    D=param['D']
-    temp1=0.5*D*dt/dx
+    temp1=0.5*param['D']*dt/dx
     for i in np.arange(2,2*n,2):
         Adata[0,i-1]= -temp1
         Adata[1,i  ]= 1.0
