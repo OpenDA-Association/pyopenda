@@ -73,7 +73,7 @@ def initialize(ensemble_size):
     obs_config = {
         'store_name': None,
         'working_dir': './../observations',
-        'config_file': 'obs (storm eunice2).csv',
+        'config_file': 'obs (storm Eunice2).csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.5, 0.5, 0.5, 0.5]
     }
