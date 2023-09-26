@@ -1,3 +1,5 @@
+import sys;
+sys.path.append("./")
 import pytest
 assert pytest   #Just to make pyflake happy on a false positive for not using pytest
 import os
