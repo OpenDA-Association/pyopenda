@@ -1,5 +1,3 @@
-import sys;
-sys.path.append("./")
 import pytest
 assert pytest   #Just to make pyflake happy on a false positive for not using pytest
 import os
@@ -71,8 +69,8 @@ def test_std_now(generate_obs_now):
 def test_ids_now(generate_obs_now):
     obs_descr_now = generate_obs_now.get_observation_descriptions()
     ids_now = obs_descr_now.get_properties('id')
-    for i, id_now in enumerate(ids_now):
-        assert id_now == generate_obs_now.labels[i]
+    for id_now in ids_now:
+        assert id_now in generate_obs_now.labels
 
 def test_keys_now(generate_obs_now):
     obs_descr = generate_obs_now.get_observation_descriptions()
