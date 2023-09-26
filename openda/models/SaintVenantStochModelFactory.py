@@ -1,6 +1,7 @@
 import numpy as np
 from openda.models.SaintVenantStochModelInstance import SaintVenantStochModelInstance
 
+
 class SaintVenantModelFactory:
     """
     Interface of Saint-Venant Model Factory

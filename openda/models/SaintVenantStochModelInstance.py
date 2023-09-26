@@ -1,9 +1,10 @@
 import numpy as np
-from scipy.sparse.linalg import spsolve
 from scipy.sparse import spdiags
+from scipy.sparse.linalg import spsolve
 from scipy.stats import norm
-from openda.costFunctions.JObjects import PyTime
 import openda.utils.py4j_utils as utils
+from openda.costFunctions.JObjects import PyTime
+
 
 class SaintVenantStochModelInstance:
     """
