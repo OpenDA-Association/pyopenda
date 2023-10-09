@@ -9,13 +9,15 @@ class SaintVenantModelFactory:
     @author Aron Schouten
     """
 
-    def __init__(self):
+    def __init__(self, f=None):
         """
         Constructor
         """
         names = ["D", "f", "g", "L", "n"]
         param_values = [15, 2.3e-4, 9.81, 55.e3, 11]
         param_uncertainty = [0, 0, 0, 0, 0]
+
+        if f: param_values[1] = f
 
         param = dict(zip(names, param_values))
         param_uncertainty = dict(zip(names, param_uncertainty))

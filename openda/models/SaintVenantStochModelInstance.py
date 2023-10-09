@@ -42,6 +42,7 @@ class SaintVenantStochModelInstance:
 
         self.current_time = PyTime(self.span[0])
         self.state = np.array(self.state)
+        self.prev_state = np.zeros_like(self.state)
         self.t = 0
 
     def get_time_horizon(self):
@@ -80,6 +81,7 @@ class SaintVenantStochModelInstance:
         :param time: Time to compute to.
         :return:
         """
+        self.prev_state = self.state.copy()
         end_time = time.get_start()
         A, B, phi = _get_model(self.param, self.span)
         std = np.sqrt(1-phi**2) * 0.2 # Std of model noise chosen according to desired std of AR(1)
@@ -140,7 +142,14 @@ class SaintVenantStochModelInstance:
         :return: State vector.
         """
         return self.state
+    
+    def get_prev_state(self):
+        """
+        Returns the previous state of the model.
 
+        :return: Previous state vector.
+        """
+        return self.prev_state
 
 def _get_model(param, span):
     """
