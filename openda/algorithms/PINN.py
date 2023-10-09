@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
+
 class PINN(nn.Module):
     """
     Interface of the Physics-Informed Neural Network.
