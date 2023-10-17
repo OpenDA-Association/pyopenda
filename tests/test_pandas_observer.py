@@ -1,9 +1,12 @@
 import pytest
+
+
 assert pytest   #Just to make pyflake happy on a false positive for not using pytest
 import os
 import unittest as need_assertions
-from openda.observers.pandas_observer import PandasObserver
 from openda.costFunctions.JObjects import PyTime
+from openda.observers.pandas_observer import PandasObserver
+
 
 assertions = need_assertions.TestCase('__init__')
 

@@ -1,0 +1,106 @@
+import os
+import time
+import warnings
+import matplotlib.pyplot as plt
+import pandas as pd
+import torch
+from openda.algorithms.GenericEnsembleKalmanFilter import GenericEnsembleKalmanFilter
+from openda.algorithms.PINN import NN
+from openda.algorithms.PINN import PINN
+from openda.models.SaintVenantStochModelFactory import SaintVenantModelFactory
+from openda.observers.pandas_observer import PandasObserver
+
+
+if torch.cuda.is_available():
+    device = 'cuda'
+else:
+    device = 'cpu'
+    warnings.warn('CUDA is not available, so PINN will be trained using CPU instead of GPU, which can be very slow. Please consider installing CUDA.')
+
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+alg_config = {
+    '@mainModel': None,
+    '@analysisTimes': None,
+    '@ensembleModel': None
+}
+model_factory = SaintVenantModelFactory()
+obs_config = {
+    'store_name': None,
+    'working_dir': './../observations',
+    'config_file': 'obs (storm Eunice2).csv',
+    'labels': ['0', '6', '12', '20'],
+    'std': [0.5, 0.5, 0.5, 0.5]
+}
+stoch_observer = PandasObserver(config=obs_config, scriptdir=os.path.dirname(__file__))
+
+enkf = GenericEnsembleKalmanFilter(50, alg_config, model_factory, stoch_observer)
+
+## Loading & preparing training data ##
+df = pd.read_csv('training_data.csv', delimiter=';', header=None)
+train = df.sample(frac=0.8)
+test = df.drop(train.index)
+# test = pd.read_csv('noisy_training_data.csv', delimiter=';', header=None)
+
+# y_min = df.iloc[:,-1].min()
+# y_max = df.iloc[:,-1].max()
+
+x_train = torch.tensor(train.iloc[:,:-1].values, dtype=torch.float32)
+y_train = torch.tensor(train.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
+
+x_test = torch.tensor(test.iloc[:,:-1].values, dtype=torch.float32)
+y_test = torch.tensor(test.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
+data = [x_train, y_train, x_test, y_test]
+
+## Setting up PINN ##
+layers =  [44, 20, 20, 20, 20, 20, 20, 20, 20, 1]
+model = PINN(device, layers, enkf, data)
+model.to(device)
+# model.load_state_dict(torch.load('PINN.pth'))
+
+print(model)
+
+## Optimization ##
+optimizer = torch.optim.Adagrad(model.parameters())
+start_time = time.time()
+epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
+elapsed = time.time() - start_time
+print(f'Training time: {elapsed:.2f}')
+
+# torch.save(model.state_dict(), 'PINN.pth')
+
+## NN ##
+model2 = NN(device, layers, enkf, data)
+model2.to(device)
+print(model2)
+optimizer2 = torch.optim.Adagrad(model2.parameters())
+start_time2 = time.time()
+epochs2, losses2, val_losses2 = model2.train_model(optimizer2, n_epochs=150, batch_size=32)
+elapsed2 = time.time() - start_time2
+print(f'Training time: {elapsed2:.2f}')
+
+plt.figure()
+plt.plot(epochs, losses, label='Training loss PINN')
+plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
+plt.plot(epochs2, losses2, label='Training loss NN')
+plt.plot(epochs2, val_losses2, '--', label='Validation loss NN')
+plt.title('Loss of model after training')
+plt.xlabel('Epoch')
+plt.ylabel('MSE')
+plt.legend()
+plt.show(block=False)
+
+plt.figure()
+plt.plot(epochs, losses, label='Training loss PINN')
+plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
+plt.plot(epochs2, losses2, label='Training loss NN')
+plt.plot(epochs2, val_losses2, '--', label='Validation loss NN')
+plt.title('Loss of model after training')
+plt.xlabel('Epoch')
+plt.ylabel('MSE')
+plt.xscale('log')
+plt.yscale('log')
+plt.legend()
+plt.show(block=False)
+
+input('\n[Enter] to continue')

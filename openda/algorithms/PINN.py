@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
+
 class NN(nn.Module):
     """
     Interface of the (ordinary) Neural Network.

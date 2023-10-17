@@ -1,9 +1,10 @@
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
-from openda.models.SaintVenantStochModelFactory import SaintVenantModelFactory
+import pandas as pd
 from openda.costFunctions.JObjects import PyTime
+from openda.models.SaintVenantStochModelFactory import SaintVenantModelFactory
+
 
 def plot_series(t, series_data, xlocs_waterlevel, xlocs_velocity):
     titles=[]
@@ -63,7 +64,7 @@ def test():
     for i in description:
         header.append(i)
     df.columns = header
-    df.to_csv(r".\observations\obs (simulated).csv", sep=';', index=False)
+    df.to_csv(r".\observations\obs (simulated2).csv", sep=';', index=False)
 
 
 if __name__ == '__main__':
