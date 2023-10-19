@@ -159,9 +159,11 @@ def test():
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
 
+    assert all(MSE_res <= MSE_no_res) # MSE with EnKF should not be worse than MSE withouth EnKF
 
     ## Testing model with Knock ##
     # compare_with_knock(knock, t)
+
 
 if __name__ == '__main__':
     test()

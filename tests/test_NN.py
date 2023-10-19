@@ -115,6 +115,8 @@ def test():
 
     plot(epochs, losses, val_losses, losses2, val_losses2)
 
+    assert losses[0] >= losses[-1] # PINN should have trained over time
+
 
 if __name__=='__main__':
     test()
