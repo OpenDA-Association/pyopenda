@@ -124,7 +124,7 @@ class NN(nn.Module):
         """
         self.eval() # Necessary when using Dropout or BatchNorm layers
         with torch.no_grad(): # To make sure we don't train when testing
-            y_pred = self.forward(x)
+            y_pred = self(x)
         self.train()
 
         return (y_pred*self.y_max + (1-y_pred)*self.y_min).item()
@@ -172,8 +172,8 @@ class PINN(NN):
         u_t = (u - prev_u)/self.dt
 
         # Extending u and h to keep the same dimensions after taking derivative
-        h_ext = torch.concat((torch.zeros(h.shape[0]).view(-1,1).to(self.device), h),-1)
-        u_ext = torch.concat((torch.zeros(u.shape[0]).view(-1,1).to(self.device), u),-1)
+        h_ext = torch.concat((torch.zeros(h.shape[0], device=self.device).view(-1,1), h),-1)
+        u_ext = torch.concat((torch.zeros(u.shape[0], device=self.device).view(-1,1), u),-1)
 
         h_x = (h_ext[:,1:] - h_ext[:,:-1])/self.dx
         u_x = (u_ext[:,1:] - u_ext[:,:-1])/self.dx

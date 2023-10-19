@@ -14,8 +14,8 @@ assertions = need_assertions.TestCase('__init__')
 def generate_obs():
     config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (simulated).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.6, 0.6, 0.6, 0.6]
     }
@@ -49,8 +49,8 @@ def test_keys(generate_obs):
 def generate_obs_now():
     config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (simulated).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.6, 0.6, 0.6, 0.6]
     }

@@ -74,8 +74,8 @@ def initialize(ensemble_size):
     model_factory = SaintVenantModelFactory()
     obs_config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (storm Eunice2).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.5, 0.5, 0.5, 0.5]
     }
@@ -120,7 +120,7 @@ def run_simulation(enkf, compare_class):
     return (t, results, no_results, obs, ensemble, index)#, knock)
 
 def compare_with_knock(knock, t):
-    obs_config = {'store_name': None, 'working_dir': './../observations', 'config_file': 'obs (knock).csv', 'labels': ['14'], 'std': [0]}
+    obs_config = {'store_name': None, 'working_dir': './observations', 'config_file': 'obs_knock_1min.csv', 'labels': ['14'], 'std': [0]}
     stoch_knock = PandasObserver(config=obs_config, scriptdir=os.path.dirname(__file__))
     obs_knock = stoch_knock.all_timeseries['14'].values
     t_knock = stoch_knock.all_timeseries['14'].times
