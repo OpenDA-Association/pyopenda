@@ -64,7 +64,7 @@ def test():
     for i in description:
         header.append(i)
     df.columns = header
-    df.to_csv(r".\observations\obs (simulated2).csv", sep=';', index=False)
+    df.to_csv(r"./tests/observations/obs_simulated_5min.csv", sep=';', index=False)
 
 
 if __name__ == '__main__':

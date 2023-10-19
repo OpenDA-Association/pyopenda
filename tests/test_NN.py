@@ -69,7 +69,7 @@ def load_data(csv):
     df = pd.read_csv(csv, delimiter=';', header=None)
     train = df.sample(frac=0.8)
     test = df.drop(train.index)
-    # test = pd.read_csv(r'tests\trainig_data\noisy_training_data.csv', delimiter=';', header=None)
+    # test = pd.read_csv(r'./tests/training_data/noisy_training_data.csv', delimiter=';', header=None)
 
     # y_min = df.iloc[:,-1].min()
     # y_max = df.iloc[:,-1].max()
@@ -84,7 +84,7 @@ def load_data(csv):
     return data
 
 def test():
-    data = load_data(r'tests\training_data\noisy_training_data.csv')
+    data = load_data(r'./tests/training_data/noisy_training_data.csv')
     enkf = setup_enkf()
 
     layers =  [44, 20, 20, 20, 20, 20, 20, 20, 20, 1]
