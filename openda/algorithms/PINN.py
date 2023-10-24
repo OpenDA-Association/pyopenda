@@ -126,7 +126,7 @@ class NN(nn.Module):
             y_pred = self(x)
         self.train()
 
-        return (y_pred*self.y_max + (1-y_pred)*self.y_min).item()
+        return y_pred*self.y_max + (1-y_pred)*self.y_min
 
 
 class PINN(NN):

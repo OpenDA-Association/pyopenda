@@ -45,6 +45,19 @@ def plot(epochs, losses, val_losses, losses2, val_losses2):
     plt.legend()
     plt.show(block=False)
 
+def plot_testing(model, model2, data):
+    _, _, x_test, y_test = data
+    plt.figure()
+    y_pred = model.predict(x_test)
+    plt.scatter(y_test, y_pred, marker='.', label='PINN', alpha=0.2)
+    y_pred = model2.predict(x_test)
+    plt.scatter(y_test, y_pred, marker='.', label='NN', alpha=0.2)
+    lst = [y_test.min(), y_test.max()]
+    plt.plot(lst, lst, '--k')
+    plt.xlabel('Ground Truth')
+    plt.ylabel('Prediction')
+    plt.show(block=False)
+
 def setup_enkf():
     alg_config = {
         '@mainModel': None,
@@ -104,15 +117,16 @@ def test():
     # torch.save(model.state_dict(), 'PINN.pth')
 
     ## NN ##
-    model = NN(device, layers, enkf, data)
-    model.to(device)
-    print(model)
-    optimizer = torch.optim.Adagrad(model.parameters())
+    model2 = NN(device, layers, enkf, data)
+    model2.to(device)
+    print(model2)
+    optimizer = torch.optim.Adagrad(model2.parameters())
     start_time = time.time()
-    _, losses2, val_losses2 = model.train_model(optimizer, n_epochs=150, batch_size=32)
+    _, losses2, val_losses2 = model2.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed2 = time.time() - start_time
     print(f'Training time: {elapsed2:.2f}')
 
+    plot_testing(model, model2, data)
     plot(epochs, losses, val_losses, losses2, val_losses2)
 
     assert losses[0] >= losses[-1] # PINN should have trained over time
