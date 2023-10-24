@@ -42,10 +42,9 @@ class NN(nn.Module):
         
         self.device = device
 
-        # for i in range(self.depth+1):
-        #     nn.init.xavier_normal_(self.linears[i].weight.data, gain=1.0)
-        #     # set biases to zero
-        #     nn.init.zeros_(self.linears[i].bias.data)
+        for i in range(self.depth+1):
+            nn.init.kaiming_normal_(self.linears[i].weight, nonlinearity='relu')
+            nn.init.constant_(self.linears[i].bias, 0.01)
         
     def forward(self, x):
         """
