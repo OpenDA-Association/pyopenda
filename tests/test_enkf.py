@@ -1,11 +1,13 @@
 import os
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from openda.observers.pandas_observer import PandasObserver
-from openda.models.SaintVenantStochModelFactory import SaintVenantModelFactory
+import matplotlib.pyplot as plt
+import numpy as np
+from openda.algorithms.ensemble_kalman import kalman_algorithm
+from openda.algorithms.ensemble_kalman import no_filter
 from openda.algorithms.GenericEnsembleKalmanFilter import GenericEnsembleKalmanFilter
-from openda.algorithms.ensemble_kalman import kalman_algorithm, no_filter
+from openda.models.SaintVenantStochModelFactory import SaintVenantModelFactory
+from openda.observers.pandas_observer import PandasObserver
+
 
 def plot_series(res, xlocs_waterlevel=None, xlocs_velocity=None):
     (t, results, no_results, obs, ensemble, index) = res
@@ -72,8 +74,8 @@ def initialize(ensemble_size):
     model_factory = SaintVenantModelFactory()
     obs_config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (storm Eunice2).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.5, 0.5, 0.5, 0.5]
     }
@@ -118,7 +120,7 @@ def run_simulation(enkf, compare_class):
     return (t, results, no_results, obs, ensemble, index)#, knock)
 
 def compare_with_knock(knock, t):
-    obs_config = {'store_name': None, 'working_dir': './../observations', 'config_file': 'obs (knock).csv', 'labels': ['14'], 'std': [0]}
+    obs_config = {'store_name': None, 'working_dir': './observations', 'config_file': 'obs_knock_1min.csv', 'labels': ['14'], 'std': [0]}
     stoch_knock = PandasObserver(config=obs_config, scriptdir=os.path.dirname(__file__))
     obs_knock = stoch_knock.all_timeseries['14'].values
     t_knock = stoch_knock.all_timeseries['14'].times
@@ -157,9 +159,11 @@ def test():
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
 
+    assert all(MSE_res <= MSE_no_res) # MSE with EnKF should not be worse than MSE withouth EnKF
 
     ## Testing model with Knock ##
     # compare_with_knock(knock, t)
+
 
 if __name__ == '__main__':
     test()

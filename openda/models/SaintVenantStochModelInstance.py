@@ -42,7 +42,9 @@ class SaintVenantStochModelInstance:
 
         self.current_time = PyTime(self.span[0])
         self.state = np.array(self.state)
+        self.prev_state = np.zeros_like(self.state)
         self.t = 0
+        self.f = self.param['f']
 
     def get_time_horizon(self):
         """
@@ -80,8 +82,9 @@ class SaintVenantStochModelInstance:
         :param time: Time to compute to.
         :return:
         """
+        self.prev_state = self.state.copy()
         end_time = time.get_start()
-        A, B, phi = _get_model(self.param, self.span)
+        A, B, phi = self._get_model()
         std = np.sqrt(1-phi**2) * 0.2 # Std of model noise chosen according to desired std of AR(1)
         newx = self.state
         t_now = self.current_time.get_start()
@@ -98,6 +101,9 @@ class SaintVenantStochModelInstance:
 
         self.current_time = PyTime(end_time)
         self.state = newx
+
+    def set_f(self, f):
+        self.f = f
 
     def get_observations(self, description):
         """
@@ -140,50 +146,57 @@ class SaintVenantStochModelInstance:
         :return: State vector.
         """
         return self.state
-
-
-def _get_model(param, span):
-    """
-    Returns model matrices A and B such that A*x_new=B*x
-    A and B are tri-diagonal sparce matrices, and have the order h[0], u[0], ..., h[n], u[n]  
-    """
-    n=param['n']
-    Adata=np.zeros((3,2*n+1))
-    Bdata=np.zeros((3,2*n+1))
-    Adata[1,0]=1. # Left boundary
-    Adata[1,2*n-1]=1. # Right boundary
-    Adata[1,2*n] = 1
-    phi = np.exp( -(span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
-    Bdata[1,2*n] = phi
-    # i=1,3,5,... du/dt  + g dh/sx + f u = 0
-    #  u[n+1,m] + 0.5 g dt/dx ( h[n+1,m+1/2] - h[n+1,m-1/2]) + 0.5 dt f u[n+1,m] 
-    #= u[n  ,m] - 0.5 g dt/dx ( h[n  ,m+1/2] - h[n  ,m-1/2]) - 0.5 dt f u[n  ,m]
-    dt = span[1]/np.timedelta64(1,'s')
-    dx = param['L']/(n+0.5)
-    temp1=0.5*param['g']*dt/dx
-    temp2=0.5*param['f']*dt
-    for i in np.arange(1,2*n-1,2):
-        Adata[0,i-1]= -temp1
-        Adata[1,i  ]= 1.0 + temp2
-        Adata[2,i+1]= +temp1
-        Bdata[0,i-1]= +temp1
-        Bdata[1,i  ]= 1.0 - temp2
-        Bdata[2,i+1]= -temp1
-    # i=2,4,6,... dh/dt + D du/dx = 0
-    #  h[n+1,m] + 0.5 D dt/dx ( u[n+1,m+1/2] - u[n+1,m-1/2])  
-    #= h[n  ,m] - 0.5 D dt/dx ( u[n  ,m+1/2] - u[n  ,m-1/2])
-    temp1=0.5*param['D']*dt/dx
-    for i in np.arange(2,2*n,2):
-        Adata[0,i-1]= -temp1
-        Adata[1,i  ]= 1.0
-        Adata[2,i+1]= +temp1
-        Bdata[0,i-1]= +temp1
-        Bdata[1,i  ]= 1.0
-        Bdata[2,i+1]= -temp1    
-    # Build sparse matrix
-    A=spdiags(Adata,np.array([-1,0,1]),2*n+1,2*n+1).tolil()
-    A[0, -1]=-1
-
-    B=spdiags(Bdata,np.array([-1,0,1]),2*n+1,2*n+1)
     
-    return A.tocsr(), B.tocsr(), phi
+    def get_prev_state(self):
+        """
+        Returns the previous state of the model.
+
+        :return: Previous state vector.
+        """
+        return self.prev_state
+
+    def _get_model(self):
+        """
+        Returns model matrices A and B such that A*x_new=B*x
+        A and B are tri-diagonal sparce matrices, and have the order h[0], u[0], ..., h[n], u[n]  
+        """
+        n=self.param['n']
+        Adata=np.zeros((3,2*n+1))
+        Bdata=np.zeros((3,2*n+1))
+        Adata[1,0]=1. # Left boundary
+        Adata[1,2*n-1]=1. # Right boundary
+        Adata[1,2*n] = 1
+        phi = np.exp( -(self.span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
+        Bdata[1,2*n] = phi
+        # i=1,3,5,... du/dt  + g dh/sx + f u = 0
+        #  u[n+1,m] + 0.5 g dt/dx ( h[n+1,m+1/2] - h[n+1,m-1/2]) + 0.5 dt f u[n+1,m] 
+        #= u[n  ,m] - 0.5 g dt/dx ( h[n  ,m+1/2] - h[n  ,m-1/2]) - 0.5 dt f u[n  ,m]
+        dt = self.span[1]/np.timedelta64(1,'s')
+        dx = self.param['L']/(n+0.5)
+        temp1=0.5*self.param['g']*dt/dx
+        temp2=0.5*self.f*dt
+        for i in np.arange(1,2*n-1,2):
+            Adata[0,i-1]= -temp1
+            Adata[1,i  ]= 1.0 + temp2
+            Adata[2,i+1]= +temp1
+            Bdata[0,i-1]= +temp1
+            Bdata[1,i  ]= 1.0 - temp2
+            Bdata[2,i+1]= -temp1
+        # i=2,4,6,... dh/dt + D du/dx = 0
+        #  h[n+1,m] + 0.5 D dt/dx ( u[n+1,m+1/2] - u[n+1,m-1/2])  
+        #= h[n  ,m] - 0.5 D dt/dx ( u[n  ,m+1/2] - u[n  ,m-1/2])
+        temp1=0.5*self.param['D']*dt/dx
+        for i in np.arange(2,2*n,2):
+            Adata[0,i-1]= -temp1
+            Adata[1,i  ]= 1.0
+            Adata[2,i+1]= +temp1
+            Bdata[0,i-1]= +temp1
+            Bdata[1,i  ]= 1.0
+            Bdata[2,i+1]= -temp1    
+        # Build sparse matrix
+        A=spdiags(Adata,np.array([-1,0,1]),2*n+1,2*n+1).tolil()
+        A[0, -1]=-1
+
+        B=spdiags(Bdata,np.array([-1,0,1]),2*n+1,2*n+1)
+        
+        return A.tocsr(), B.tocsr(), phi

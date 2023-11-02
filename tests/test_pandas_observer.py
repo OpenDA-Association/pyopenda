@@ -1,9 +1,12 @@
 import pytest
+
+
 assert pytest   #Just to make pyflake happy on a false positive for not using pytest
 import os
 import unittest as need_assertions
-from openda.observers.pandas_observer import PandasObserver
 from openda.costFunctions.JObjects import PyTime
+from openda.observers.pandas_observer import PandasObserver
+
 
 assertions = need_assertions.TestCase('__init__')
 
@@ -11,8 +14,8 @@ assertions = need_assertions.TestCase('__init__')
 def generate_obs():
     config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (simulated).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.6, 0.6, 0.6, 0.6]
     }
@@ -46,8 +49,8 @@ def test_keys(generate_obs):
 def generate_obs_now():
     config = {
         'store_name': None,
-        'working_dir': './../observations',
-        'config_file': 'obs (simulated).csv',
+        'working_dir': './observations',
+        'config_file': 'obs_storm_Eunice_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.6, 0.6, 0.6, 0.6]
     }

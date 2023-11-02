@@ -1,7 +1,10 @@
 import pytest
+
+
 assert pytest   #Just to make pyflake happy on a false positive for not using pytest
 import unittest as need_assertions
 from openda.algorithms import Dud
+
 
 assertions = need_assertions.TestCase('__init__')
 
