@@ -177,7 +177,6 @@ def run_simulation(model, enkf, enkf_PINN, compare_class):
             f_est = get_estimated_f(model, enkf_PINN)
             print(f"Inital f = {enkf.model_factory.model_attributes[0]['f']}")
             print(f'Estimated f = {f_est}')
-            _ = input("Press [enter] continue.")
 
             # Set estimated f as new bottom friction coefficient
             enkf_PINN.main_model.set_f([f_est])
