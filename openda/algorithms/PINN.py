@@ -158,7 +158,7 @@ class PINN(NN):
         :param x: States.
         :return: MSE of PDE's, 1/N*∑|h_t + g * u_x|^2 + 1/N*∑|u_t + D * h_x + f_est * u|^2.
         """
-        f = self._x_to_f(x)
+        f = self._x_to_f(x).to(self.device)
 
         n = x.shape[1]//2
         
