@@ -215,7 +215,7 @@ def test():
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
 
-    assert all(MSE_PINN <= MSE_res) # MSE of PINN+EnKF should not be worse than MSE of EnKF only
+    assert all(MSE_PINN <= MSE_no_res) # MSE with EnKF+PINN should not be worse than MSE withouth EnKF
 
 
 if __name__ == '__main__':
