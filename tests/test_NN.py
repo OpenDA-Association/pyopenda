@@ -23,23 +23,23 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 def plot(epochs, losses, val_losses, losses2, val_losses2):
     plt.figure()
     plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
     plt.plot(epochs, losses2, label='Training loss NN')
+    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
     plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
-    plt.ylabel('MSE')
+    plt.ylabel('Loss')
     plt.legend()
     plt.show(block=False)
 
     plt.figure()
     plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
     plt.plot(epochs, losses2, label='Training loss NN')
+    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
     plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
-    plt.ylabel('MSE')
+    plt.ylabel('Loss')
     plt.xscale('log')
     plt.yscale('log')
     plt.legend()
@@ -80,27 +80,23 @@ def setup_enkf():
 
 def load_data(csv):
     df = pd.read_csv(csv, delimiter=';', header=None)
-    train = df.sample(frac=0.8)
+    train = df.sample(frac=0.9)
     test = df.drop(train.index)
-    # test = pd.read_csv(r'./tests/training_data/noisy_training_data.csv', delimiter=';', header=None)
 
-    # y_min = df.iloc[:,-1].min()
-    # y_max = df.iloc[:,-1].max()
+    x_train = torch.tensor(train.iloc[:,:-3].values, dtype=torch.float32)
+    y_train = torch.tensor(train.iloc[:,-3:].values, dtype=torch.float32).view(-1, 3)
 
-    x_train = torch.tensor(train.iloc[:,:-1].values, dtype=torch.float32)
-    y_train = torch.tensor(train.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
-
-    x_test = torch.tensor(test.iloc[:,:-1].values, dtype=torch.float32)
-    y_test = torch.tensor(test.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
+    x_test = torch.tensor(test.iloc[:,:-3].values, dtype=torch.float32)
+    y_test = torch.tensor(test.iloc[:,-3:].values, dtype=torch.float32).view(-1, 3)
     data = [x_train, y_train, x_test, y_test]
 
     return data
 
 def test():
-    data = load_data(r'./tests/training_data/noisy_training_data.csv')
+    data = load_data(r'./tests/training_data/training_data.csv')
     enkf = setup_enkf()
 
-    layers =  [44, 20, 20, 20, 20, 20, 20, 20, 20, 1]
+    layers = [44, 10, 10, 10, 10, 3]
     model = PINN(device, layers, enkf, data)
     model.to(device)
     # model.load_state_dict(torch.load('PINN.pth'))

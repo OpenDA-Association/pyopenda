@@ -158,7 +158,7 @@ class PINN(NN):
         :param x: States.
         :return: MSE of PDE's, 1/N*∑|h_t + g * u_x|^2 + 1/N*∑|u_t + D * h_x + f_est * u|^2.
         """
-        f = self.y_min + self.forward(x)*(self.y_max - self.y_min)
+        f = self._x_to_f(x)
 
         n = x.shape[1]//2
         
@@ -194,3 +194,19 @@ class PINN(NN):
         loss_PDE = self.loss_PDE(x)
         # print(f'Loss for |f-f*|^2 is {loss_param}. Loss for |PDE|^2 is {loss_PDE}. Ratio = {loss_param/loss_PDE}')
         return loss_param + loss_PDE
+    
+    def _x_to_f(self, x):
+        """
+        Transform output into a vector f that has the length of the grid.
+
+        :param x: States.
+        :return: Vector f.
+        """
+        output = self.y_min + self.forward(x)*(self.y_max - self.y_min)
+
+        n = x.shape[1]//4
+
+        f = torch.zeros((output.shape[0], n))
+        for i in range(n):
+            f[:,i] = output[:,int(i/n*output.shape[1])]
+        return f
