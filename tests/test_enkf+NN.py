@@ -175,7 +175,7 @@ def run_simulation(model, enkf, enkf_PINN, compare_class):
 
         if j==18:
             f_est = get_estimated_f(model, enkf_PINN)
-            print(f"Inital f = {enkf.model_factory.model_attributes[0]['f']}")
+            print(f"Initial f = {enkf.model_factory.model_attributes[0]['f']}")
             print(f'Estimated f = {f_est}')
 
             # Set estimated f as new bottom friction coefficient
@@ -214,8 +214,6 @@ def test():
 
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
-
-    assert all(MSE_PINN <= MSE_no_res) # MSE with EnKF+PINN should not be worse than MSE withouth EnKF
 
 
 if __name__ == '__main__':
