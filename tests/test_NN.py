@@ -93,7 +93,7 @@ def load_data(csv):
     return data
 
 def test():
-    data = load_data(r'./tests/training_data/training_data.csv')
+    data = load_data(r'./tests/training_data/training_data_space_dep.csv')
     enkf = setup_enkf()
 
     layers = [44, 10, 10, 10, 10, 3]

@@ -31,4 +31,4 @@ for i in range(n_iters):
 
         df = pd.concat([df, pd.DataFrame(series_data).T])
 
-df.to_csv(r'./tests/training_data/training_data.csv', sep=';', index=False, header=None)
+df.to_csv(r'./tests/training_data/training_data_space_dep.csv', sep=';', index=False, header=None)
