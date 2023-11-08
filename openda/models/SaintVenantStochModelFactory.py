@@ -13,7 +13,7 @@ class SaintVenantModelFactory:
         """
         Constructor
         """
-        if not f:
+        if f is None:
             f = np.random.uniform(1e-4, 1e-3, 3)
 
         names = ["D", "f", "g", "L", "n"]

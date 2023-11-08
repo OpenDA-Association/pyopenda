@@ -25,11 +25,12 @@ def plot_series(t, series_data, xlocs_waterlevel, xlocs_velocity):
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d, %H:%M'))
         ax.tick_params(axis='x', labelrotation = 70)
         plt.tight_layout()
-        plt.show()
+        plt.show(block=False)
 
-def test():
+def test_gen_obs():
     ## Initializing the model ##
-    model_factory = SaintVenantModelFactory()
+    f = np.random.uniform(1e-4, 1e-3, 3)
+    model_factory = SaintVenantModelFactory(f)
     model = model_factory.get_instance(None, "ens")
 
     xlocs_waterlevel = [0, 12*1e3, 30*1e3, 50*1e3] # Locations (in m) where Time Series of Waterlevel is made
@@ -65,7 +66,9 @@ def test():
         header.append(i)
     df.columns = header
     df.to_csv(r"./tests/observations/obs_simulated_5min.csv", sep=';', index=False)
+    return f
 
 
 if __name__ == '__main__':
-    test()
+    test_gen_obs()
+    _ = input("Press [enter] to close plots and continue.")
