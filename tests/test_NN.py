@@ -48,9 +48,9 @@ def plot(epochs, losses, val_losses, losses2, val_losses2):
 def plot_testing(model, model2, data):
     _, _, x_test, y_test = data
     plt.figure()
-    y_pred = model.predict(x_test)
+    y_pred = model.predict(x_test.to(device)).cpu()
     plt.scatter(y_test, y_pred, marker='.', label='PINN', alpha=0.2)
-    y_pred = model2.predict(x_test)
+    y_pred = model2.predict(x_test.to(device)).cpu()
     plt.scatter(y_test, y_pred, marker='.', label='NN', alpha=0.2)
     lst = [y_test.min(), y_test.max()]
     plt.plot(lst, lst, '--k')
