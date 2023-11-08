@@ -174,7 +174,7 @@ def run_simulation(model, enkf, enkf_PINN, compare_class):
             results[2][j, :] = no_filter(enkf_PINN)
 
         if j==18:
-            f_est = get_estimated_f(model, enkf_PINN)
+            f_est = get_estimated_f(model, enkf)
             print(f"Initial f = {enkf.model_factory.model_attributes[0]['f']}")
             print(f'Estimated f = {f_est}')
 

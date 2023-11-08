@@ -16,7 +16,7 @@ from tests.observations.generate_observations import test_gen_obs
 
 
 if torch.cuda.is_available():
-    device = 'cpu'
+    device = 'cuda'
 else:
     device = 'cpu'
     warnings.warn('CUDA is not available, so PINN will be trained using CPU instead of GPU, which can be very slow. Please consider installing CUDA.')
@@ -45,7 +45,7 @@ def setup_and_train_NN(device, data, enkf):
     optimizer = torch.optim.Adagrad(model.parameters())
 
     start_time = time.time()
-    epochs, losses, val_losses = model.train_model(optimizer, n_epochs=2, batch_size=32)
+    epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed = time.time() - start_time
     print(f'Training time: {elapsed:.2f}')
 
@@ -175,7 +175,7 @@ def run_simulation(model, enkf, enkf_PINN, compare_class, f_true):
             results[2][j, :] = no_filter(enkf_PINN)
 
         if j==18:
-            f_est = get_estimated_f(model, enkf_PINN)
+            f_est = get_estimated_f(model, enkf)
             print(f"Initial f = {enkf.model_factory.model_attributes[0]['f']}")
             print(f"True f = {f_true}")
             print(f'Estimated f = {f_est}')
@@ -196,9 +196,9 @@ def run_simulation(model, enkf, enkf_PINN, compare_class, f_true):
 
 def test():
     ## Initializing ##
-    ensemble_size = 50
-    enkf, enkf_PINN, compare_class, f_true = initialize(ensemble_size)
-    model = setup_and_train_NN(device, load_data(r'./tests/training_data/training_data_space_dep.csv'), enkf)
+    enkf, enkf_PINN, compare_class, f_true = initialize(ensemble_size = 50)
+    data = load_data(r'./tests/training_data/training_data_space_dep.csv')
+    model = setup_and_train_NN(device, data, enkf)
 
     ## Running the Model ##
     res = run_simulation(model, enkf, enkf_PINN, compare_class, f_true)
