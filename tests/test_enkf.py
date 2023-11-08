@@ -155,8 +155,8 @@ def test():
     MSE_res = np.average( (results[index]-obs[index])**2, axis = 0)
     MSE_no_res = np.average( (no_results[index]-obs[index])**2, axis = 0)
 
-    print(f"MSE with EnKF is {MSE_res}")
     print(f"MSE without EnKF is {MSE_no_res}")
+    print(f"MSE with EnKF is {MSE_res}")
 
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])

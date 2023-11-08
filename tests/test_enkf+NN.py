@@ -208,8 +208,8 @@ def test():
     MSE_no_res = np.average( (no_results[index]-obs[index])**2, axis = 0)
     MSE_PINN = np.average( (results_PINN[index]-obs[index])**2, axis = 0)
 
-    print(f"MSE with EnKF is {MSE_res}")
     print(f"MSE without EnKF is {MSE_no_res}")
+    print(f"MSE with EnKF is {MSE_res}")
     print(f"MSE with EnKF + PINN is {MSE_PINN}")
 
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
