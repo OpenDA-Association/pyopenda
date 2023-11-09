@@ -14,38 +14,6 @@ class SaintVenantWithSmootherInstance(SaintVenantStochModelInstance):
 
     """
 
-    def __init__(self, model_attributes, noise_config, main_or_ens=None):
-        """
-        Constructor
-        """
-        (self.param, self.param_uncertainty, self.state, self.state_uncertainty, self.span) = model_attributes
-
-        if noise_config is None:
-            if main_or_ens == "main":
-                noise_config = {'@stochParameter':False, '@stochForcing':False, '@stochInit':False}
-            elif main_or_ens == "ens":
-                noise_config = {'@stochParameter':False, '@stochForcing':True, '@stochInit':True}
-            else:
-                raise ValueError("main_or_ens must have value 'main' or 'ens'")
-            
-        if noise_config.get('@stochInit'):
-            realizations = [norm(loc=mean, scale=std).rvs() for mean,
-                            std in zip(self.state, self.state_uncertainty)]
-            self.state = realizations.copy()
-        if noise_config.get('@stochParameter'):
-            realizations = [norm(loc=mean, scale=std).rvs() for mean,
-                            std in zip(list(self.param.values()),
-                                       list(self.param_uncertainty.values()))]
-            self.param = realizations
-
-        self.auto_noise = noise_config.get('@stochForcing')
-
-        self.current_time = PyTime(self.span[0])
-        self.state = np.array(self.state)
-        self.prev_state = np.zeros_like(self.state)
-        self.t = 0
-        self.f = self.param['f']
-
     def compute(self, time):
         """
         Let the stochastic model instance compute to the requested target time stamp.
@@ -92,7 +60,6 @@ class SaintVenantWithSmootherInstance(SaintVenantStochModelInstance):
             delta_mean = utils.input_to_py_list(state_array)
             self.state = delta_mean[:-1]
             self.f = [delta_mean[-1]]
-
 
     def get_state(self):
         """
