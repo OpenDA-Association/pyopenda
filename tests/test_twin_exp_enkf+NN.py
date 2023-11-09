@@ -113,6 +113,7 @@ def run_simulation(model, enkf, f_init, f_true):
 
 def test():
     ensemble_size = 50
+    # Perform 7*7 = 49 twin experiments to test performance
     f_init_list = [[1e-4+i*0.00015] for i in range(7)]
     obs_list = ['obs_simulated_5min_.00010.csv', 'obs_simulated_5min_.00025.csv', 'obs_simulated_5min_.00040.csv',
                 'obs_simulated_5min_.00055.csv', 'obs_simulated_5min_.00070.csv', 'obs_simulated_5min_.00085.csv', 'obs_simulated_5min_.00100.csv']
