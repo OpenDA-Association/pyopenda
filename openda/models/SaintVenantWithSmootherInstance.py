@@ -6,7 +6,6 @@ from openda.costFunctions.JObjects import PyTime
 from openda.models.SaintVenantStochModelInstance import SaintVenantStochModelInstance
 
 
-
 class SaintVenantWithSmootherInstance(SaintVenantStochModelInstance):
     """
     Interface of the Saint-Venant Stochastic Model Instance with Smoother
