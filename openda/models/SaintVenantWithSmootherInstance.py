@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
 from scipy.stats import norm
 import openda.utils.py4j_utils as utils
