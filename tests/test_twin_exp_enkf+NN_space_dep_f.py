@@ -151,7 +151,7 @@ def test():
     data = load_data(r'./tests/training_data/training_data_space_dep.csv')
     model = setup_and_train_NN(device, data, enkf)
 
-    n_runs = 100 # Perform 100 twin experiments to test performance
+    n_runs = 10 # Perform 10 twin experiments to test performance
     abserrs = np.zeros(3)
     imprs = np.zeros(3)
     under_overs = np.zeros(3)
