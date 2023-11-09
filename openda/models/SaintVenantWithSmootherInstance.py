@@ -4,9 +4,11 @@ from scipy.sparse.linalg import spsolve
 from scipy.stats import norm
 import openda.utils.py4j_utils as utils
 from openda.costFunctions.JObjects import PyTime
+from openda.models.SaintVenantStochModelInstance import SaintVenantStochModelInstance
 
 
-class SaintVenantWithSmootherInstance:
+
+class SaintVenantWithSmootherInstance(SaintVenantStochModelInstance):
     """
     Interface of the Saint-Venant Stochastic Model Instance with Smoother
 
@@ -46,34 +48,6 @@ class SaintVenantWithSmootherInstance:
         self.t = 0
         self.f = self.param['f']
 
-    def get_time_horizon(self):
-        """
-        Get the computational time horizon of the model (begin and end time).
-
-        :return: the time horizon (containing begin and end time).
-        """
-        return PyTime(self.span[0], None, self.span[2])
-
-    def get_current_time(self):
-        """
-        Get the model instance's current simulation time stamp.
-
-        :return: The model's current simulation time stamp.
-        """
-        return self.current_time
-
-    def announce_observed_values(self, descriptions):
-        """
-        Tells model that it can expect to be asked for model values corresponding to the observations
-        described. The model can make arrangement to save these values. The method compute run over a long
-        interval at once, not stopping at each time with observations.
-        This is meant to increase the performance especially of calibration algorithms.
-
-        :param descriptions: an ObservationDescriptions object with meta data for the observations.
-        :return:
-        """
-        return descriptions
-
     def compute(self, time):
         """
         Let the stochastic model instance compute to the requested target time stamp.
@@ -104,24 +78,6 @@ class SaintVenantWithSmootherInstance:
         self.current_time = PyTime(end_time)
         self.state = newx
 
-    def get_observations(self, description):
-        """
-        Get model values corresponding to the descriptions.
-
-        :param descriptions: An ObservationDescriptions object with meta data for the observations
-        :return: python list with the model values corresponding to the descriptions
-        """
-        # If necessary, first convert to integers
-        if isinstance(description, np.ndarray):
-            description = description.tolist()
-        if isinstance(description, list):
-            if isinstance(description[0], str):
-                description = list(map(int,description))
-        else:
-            description = list(map(int,description.observation_id))
-     
-        return self.state[description]
-
     def update_state(self, state_array, main_or_ens):
         """
         Update the state vector of the model.
@@ -151,49 +107,3 @@ class SaintVenantWithSmootherInstance:
         state[-1] = self.f[0]
 
         return state
-    
-    def _get_model(self):
-        """
-        Returns model matrices A and B such that A*x_new=B*x
-        A and B are tri-diagonal sparce matrices, and have the order h[0], u[0], ..., h[n], u[n]  
-        """
-        n=self.param['n']
-        Adata=np.zeros((3,2*n+1))
-        Bdata=np.zeros((3,2*n+1))
-        Adata[1,0]=1. # Left boundary
-        Adata[1,2*n-1]=1. # Right boundary
-        Adata[1,2*n] = 1
-        phi = np.exp( -(self.span[1]/np.timedelta64(1,'s'))/(6.*60.*60.) )
-        Bdata[1,2*n] = phi
-        # i=1,3,5,... du/dt  + g dh/sx + f u = 0
-        #  u[n+1,m] + 0.5 g dt/dx ( h[n+1,m+1/2] - h[n+1,m-1/2]) + 0.5 dt f u[n+1,m] 
-        #= u[n  ,m] - 0.5 g dt/dx ( h[n  ,m+1/2] - h[n  ,m-1/2]) - 0.5 dt f u[n  ,m]
-        dt = self.span[1]/np.timedelta64(1,'s')
-        dx = self.param['L']/(n+0.5)
-        temp1=0.5*self.param['g']*dt/dx
-        for i in np.arange(1,2*n-1,2):
-            temp2=0.5*self.f[int(i/(2*n)*len(self.f))]*dt
-            Adata[0,i-1]= -temp1
-            Adata[1,i  ]= 1.0 + temp2
-            Adata[2,i+1]= +temp1
-            Bdata[0,i-1]= +temp1
-            Bdata[1,i  ]= 1.0 - temp2
-            Bdata[2,i+1]= -temp1
-        # i=2,4,6,... dh/dt + D du/dx = 0
-        #  h[n+1,m] + 0.5 D dt/dx ( u[n+1,m+1/2] - u[n+1,m-1/2])  
-        #= h[n  ,m] - 0.5 D dt/dx ( u[n  ,m+1/2] - u[n  ,m-1/2])
-        temp1=0.5*self.param['D']*dt/dx
-        for i in np.arange(2,2*n,2):
-            Adata[0,i-1]= -temp1
-            Adata[1,i  ]= 1.0
-            Adata[2,i+1]= +temp1
-            Bdata[0,i-1]= +temp1
-            Bdata[1,i  ]= 1.0
-            Bdata[2,i+1]= -temp1    
-        # Build sparse matrix
-        A=spdiags(Adata,np.array([-1,0,1]),2*n+1,2*n+1).tolil()
-        A[0, -1]=-1
-
-        B=spdiags(Bdata,np.array([-1,0,1]),2*n+1,2*n+1)
-        
-        return A.tocsr(), B.tocsr(), phi
