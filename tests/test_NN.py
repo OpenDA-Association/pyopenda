@@ -99,7 +99,7 @@ def test():
     layers = [44, 10, 10, 10, 10, 3]
     model = PINN(device, layers, enkf, data)
     model.to(device)
-    # model.load_state_dict(torch.load('PINN.pth'))
+    # model.load_state_dict(torch.load('tests/PINNs/PINN_space_dep.pth'))
 
     print(model)
 
@@ -110,7 +110,7 @@ def test():
     elapsed = time.time() - start_time
     print(f'Training time: {elapsed:.2f}')
 
-    # torch.save(model.state_dict(), 'PINN.pth')
+    # torch.save(model.state_dict(), 'tests/PINNs/PINN_space_dep.pth')
 
     ## NN ##
     model2 = NN(device, layers, enkf, data)

@@ -1,5 +1,5 @@
 import os
-import time
+# import time
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,27 +39,27 @@ def setup_and_train_NN(device, data, enkf):
     layers =  [44, 10, 10, 10, 10, 3]
     model = PINN(device, layers, enkf, data)
     model.to(device)
-    # model.load_state_dict(torch.load('PINN.pth'))
+    model.load_state_dict(torch.load('tests/PINNs/PINN_space_dep.pth'))
 
-    optimizer = torch.optim.Adagrad(model.parameters())
+    # optimizer = torch.optim.Adagrad(model.parameters())
 
-    start_time = time.time()
-    epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
-    elapsed = time.time() - start_time
-    print(f'Training time: {elapsed:.2f}')
+    # start_time = time.time()
+    # epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
+    # elapsed = time.time() - start_time
+    # print(f'Training time: {elapsed:.2f}')
 
-    plt.figure()
-    plt.plot(epochs, losses, label='Training loss')
-    plt.plot(epochs, val_losses, '--', label='Validation loss')
-    plt.title('Loss of model after training')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show(block=False)
+    # plt.figure()
+    # plt.plot(epochs, losses, label='Training loss')
+    # plt.plot(epochs, val_losses, '--', label='Validation loss')
+    # plt.title('Loss of model after training')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Loss')
+    # plt.legend()
+    # plt.show(block=False)
 
-    plot_testing(model, data)
+    # plot_testing(model, data)
 
-    # torch.save(model.state_dict(), 'PINN.pth')
+    # torch.save(model.state_dict(), 'tests/PINNs/PINN_space_dep.pth')
     
     return model
 
@@ -92,6 +92,7 @@ def get_estimated_f(model, enkf):
 
 def initialize(ensemble_size):
     f_true = test_gen_obs()
+    plt.close('all')
     alg_config = {
         '@mainModel': None,
         '@analysisTimes': None,
