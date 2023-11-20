@@ -18,7 +18,7 @@ class SaintVenantWithSmootherFactory:
 
         names = ["D", "f", "g", "L", "n"]
         param_values = [15, f, 9.81, 55.e3, 11]
-        param_uncertainty = [0, 0.00001, 0, 0, 0]
+        param_uncertainty = [0, 0, 0, 0, 0]
 
         param = dict(zip(names, param_values))
         param_uncertainty = dict(zip(names, param_uncertainty))
