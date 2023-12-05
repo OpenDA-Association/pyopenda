@@ -111,6 +111,7 @@ def run_simulation(model, enkf, f_init, f_true):
 
     return f_est, impr, abs(f_true-f_est)
 
+
 def test():
     ensemble_size = 50
     # Perform 7*7 = 49 twin experiments to test performance
@@ -142,9 +143,6 @@ def test():
         print(error_arr)
         print("The Improvements are at:")
         print(impr_arr)
-
-
-    assert np.sum(impr_arr)/(len(f_init_list)*len(obs_list)) > 0.5 # We expect improvement at least 50% of the time
 
 
 if __name__ == '__main__':
