@@ -140,7 +140,7 @@ def initialize(ensemble_size):
     model_factory = SaintVenantModelFactory()
     obs_config = {
         'store_name': None,
-        'working_dir': './observations',
+        'working_dir': './../observations',
         'config_file': 'obs_simulated_5min.csv',
         'labels': ['0', '6', '12', '20'],
         'std': [0.5, 0.5, 0.5, 0.5]
