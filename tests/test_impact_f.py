@@ -85,6 +85,9 @@ def test():
 
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
 
+    (_, results1, results2) = res
+    assert all(np.max(results1, axis=0) <= np.max(results2, axis=0)) # f=1e-3 should give lower waterlevels than f=1e-4
+
 
 if __name__ == '__main__':
     test()
