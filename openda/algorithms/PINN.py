@@ -80,7 +80,7 @@ class NN(nn.Module):
         :param optimizer: The (torch.)optimizer that is used for training.
         :param n_epochs: Number of epochs.
         :param batch_size: The batch size to train with.
-        :return: Lists with epoch numbers, the in-sample MSE's, out-sample MSE's, and (out-sample) biases.
+        :return: Lists with epoch numbers, the in-sample MSE's and out-sample MSE's.
         """
         output = [[], [], []]
         for epoch in range(n_epochs):
@@ -94,11 +94,16 @@ class NN(nn.Module):
                 # print(loss)
                 optimizer.step()
 
-            val_loss = self.test_model()
+            self.eval() # Necessary when using Dropout or BatchNorm layers
+            with torch.no_grad(): # To make sure we don't train when testing
+                mse = ( (self.forward(self.x_train) - self.y_train)**2 ).mean()
+                val_mse = ( (self.forward(self.x_test) - self.y_test)**2 ).mean()
+            self.train()
+
             output[0].append(epoch)
-            output[1].append(loss.item())
-            output[2].append(val_loss.item())
-            print(f'Epoch {epoch}: Loss = {loss}, Validaton loss = {val_loss}')
+            output[1].append(mse.item())
+            output[2].append(val_mse.item())
+            print(f'Epoch {epoch}: Loss = {loss}, MSE = {mse}, Validaton MSE = {val_mse}')
 
         return output
     

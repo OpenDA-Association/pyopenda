@@ -20,12 +20,12 @@ else:
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
-def plot(epochs, losses, val_losses, losses2, val_losses2):
+def plot(epochs, mses, val_mses, mses2, val_mses2):
     plt.figure()
-    plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, losses2, label='Training loss NN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
-    plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
+    plt.plot(epochs, mses, label='Training loss PINN')
+    plt.plot(epochs, mses2, label='Training loss NN')
+    plt.plot(epochs, val_mses, '--', label='Validation loss PINN')
+    plt.plot(epochs, val_mses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
@@ -33,10 +33,10 @@ def plot(epochs, losses, val_losses, losses2, val_losses2):
     plt.show(block=False)
 
     plt.figure()
-    plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, losses2, label='Training loss NN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
-    plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
+    plt.plot(epochs, mses, label='Training loss PINN')
+    plt.plot(epochs, mses2, label='Training loss NN')
+    plt.plot(epochs, val_mses, '--', label='Validation loss PINN')
+    plt.plot(epochs, val_mses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
@@ -106,7 +106,7 @@ def test():
     ## Optimization ##
     optimizer = torch.optim.Adagrad(model.parameters())
     start_time = time.time()
-    epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
+    epochs, mses, val_mses = model.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed = time.time() - start_time
     print(f'Training time: {elapsed:.2f}')
 
@@ -118,14 +118,14 @@ def test():
     print(model2)
     optimizer = torch.optim.Adagrad(model2.parameters())
     start_time = time.time()
-    _, losses2, val_losses2 = model2.train_model(optimizer, n_epochs=150, batch_size=32)
+    _, mses2, val_mses2 = model2.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed2 = time.time() - start_time
     print(f'Training time: {elapsed2:.2f}')
 
     plot_testing(model, model2, data)
-    plot(epochs, losses, val_losses, losses2, val_losses2)
+    plot(epochs, mses, val_mses, mses2, val_mses2)
 
-    assert losses[0] >= losses[-1] # PINN should have trained over time
+    assert mses[0] >= mses[-1] # PINN should have trained over time
 
 
 if __name__=='__main__':
