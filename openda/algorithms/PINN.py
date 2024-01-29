@@ -80,7 +80,7 @@ class NN(nn.Module):
         :param optimizer: The (torch.)optimizer that is used for training.
         :param n_epochs: Number of epochs.
         :param batch_size: The batch size to train with.
-        :return: Lists with epoch numbers, the in-sample MSE's, out-sample MSE's, and (out-sample) biases.
+        :return: Lists with epoch numbers, the in-sample MSE's and out-sample MSE's.
         """
         output = [[], [], []]
         for epoch in range(n_epochs):
@@ -94,11 +94,16 @@ class NN(nn.Module):
                 # print(loss)
                 optimizer.step()
 
-            val_loss = self.test_model()
+            self.eval() # Necessary when using Dropout or BatchNorm layers
+            with torch.no_grad(): # To make sure we don't train when testing
+                mse = ( (self.forward(self.x_train) - self.y_train)**2 ).mean()
+                val_mse = ( (self.forward(self.x_test) - self.y_test)**2 ).mean()
+            self.train()
+
             output[0].append(epoch)
-            output[1].append(loss.item())
-            output[2].append(val_loss.item())
-            print(f'Epoch {epoch}: Loss = {loss}, Validaton loss = {val_loss}')
+            output[1].append(mse.item())
+            output[2].append(val_mse.item())
+            print(f'Epoch {epoch}: Loss = {loss}, MSE = {mse}, Validaton MSE = {val_mse}')
 
         return output
     
@@ -158,7 +163,7 @@ class PINN(NN):
         :param x: States.
         :return: MSE of PDE's, 1/N*∑|h_t + g * u_x|^2 + 1/N*∑|u_t + D * h_x + f_est * u|^2.
         """
-        f = self.y_min + self.forward(x)*(self.y_max - self.y_min)
+        f = self._x_to_f(x).to(self.device)
 
         n = x.shape[1]//2
         
@@ -194,3 +199,19 @@ class PINN(NN):
         loss_PDE = self.loss_PDE(x)
         # print(f'Loss for |f-f*|^2 is {loss_param}. Loss for |PDE|^2 is {loss_PDE}. Ratio = {loss_param/loss_PDE}')
         return loss_param + loss_PDE
+    
+    def _x_to_f(self, x):
+        """
+        Transform output into a vector f that has the length of the grid.
+
+        :param x: States.
+        :return: Vector f.
+        """
+        output = self.y_min + self.forward(x)*(self.y_max - self.y_min)
+
+        n = x.shape[1]//4
+
+        f = torch.zeros((output.shape[0], n))
+        for i in range(n):
+            f[:,i] = output[:,int(i/n*output.shape[1])]
+        return f

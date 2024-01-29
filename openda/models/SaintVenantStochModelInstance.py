@@ -45,6 +45,7 @@ class SaintVenantStochModelInstance:
         self.prev_state = np.zeros_like(self.state)
         self.t = 0
         self.f = self.param['f']
+        self.A, self.B, self.phi = self._get_model()
 
     def get_time_horizon(self):
         """
@@ -84,8 +85,7 @@ class SaintVenantStochModelInstance:
         """
         self.prev_state = self.state.copy()
         end_time = time.get_start()
-        A, B, phi = self._get_model()
-        std = np.sqrt(1-phi**2) * 0.2 # Std of model noise chosen according to desired std of AR(1)
+        std = np.sqrt(1-self.phi**2) * 0.2 # Std of model noise chosen according to desired std of AR(1)
         newx = self.state
         t_now = self.current_time.get_start()
         t_step = self.span[1]
@@ -93,17 +93,18 @@ class SaintVenantStochModelInstance:
         for _ in range(nsteps):
             self.t += self.span[1]/np.timedelta64(1,'s')
             x = self.state.copy()
-            rhs = B.dot(x)
+            rhs = self.B.dot(x)
             rhs[0] += -0.25 + 1.25 * np.sin(2.0*np.pi/(12.42*60.*60.)*self.t) # Left boundary
             if self.auto_noise:
                 rhs[-1] += norm(loc=0, scale=std).rvs() # White noise
-            newx = spsolve(A, rhs)
+            newx = spsolve(self.A, rhs)
 
         self.current_time = PyTime(end_time)
         self.state = newx
 
     def set_f(self, f):
         self.f = f
+        self.A, self.B, self.phi = self._get_model()
 
     def get_observations(self, description):
         """
@@ -174,8 +175,8 @@ class SaintVenantStochModelInstance:
         dt = self.span[1]/np.timedelta64(1,'s')
         dx = self.param['L']/(n+0.5)
         temp1=0.5*self.param['g']*dt/dx
-        temp2=0.5*self.f*dt
         for i in np.arange(1,2*n-1,2):
+            temp2=0.5*self.f[int(i/(2*n)*len(self.f))]*dt
             Adata[0,i-1]= -temp1
             Adata[1,i  ]= 1.0 + temp2
             Adata[2,i+1]= +temp1

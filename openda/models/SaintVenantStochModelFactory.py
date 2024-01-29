@@ -13,8 +13,8 @@ class SaintVenantModelFactory:
         """
         Constructor
         """
-        if not f: f = np.random.uniform(1e-5, 1e-3)
-        print(f'Initial f = {f}')
+        if f is None:
+            f = np.random.uniform(1e-4, 1e-3, 3)
 
         names = ["D", "f", "g", "L", "n"]
         param_values = [15, f, 9.81, 55.e3, 11]

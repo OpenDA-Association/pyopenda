@@ -117,7 +117,8 @@ def run_simulation(enkf, compare_class):
     for i, idx in enumerate(enkf.observer.labels):
         obs[:,i] = enkf.observer.all_timeseries[idx].values[:n_times]
 
-    return (t, results, no_results, obs, ensemble, index)#, knock)
+    # return (t, results, no_results, obs, ensemble, index, knock)
+    return (t, results, no_results, obs, ensemble, index)
 
 def compare_with_knock(knock, t):
     obs_config = {'store_name': None, 'working_dir': './observations', 'config_file': 'obs_knock_1min.csv', 'labels': ['14'], 'std': [0]}
@@ -147,14 +148,15 @@ def test():
 
     ## Running the Model ##
     res = run_simulation(enkf, compare_class)
+    # (t, results, no_results, obs, _, index, knock) = res
     (_, results, no_results, obs, _, index) = res
 
     ## Returning results ##
     MSE_res = np.average( (results[index]-obs[index])**2, axis = 0)
     MSE_no_res = np.average( (no_results[index]-obs[index])**2, axis = 0)
 
-    print(f"MSE with EnKF is {MSE_res}")
     print(f"MSE without EnKF is {MSE_no_res}")
+    print(f"MSE with EnKF is {MSE_res}")
 
     plot_series(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])
     plot_ensemble(res, ['Borkum', 'Eemshaven', 'Delfzijl', 'Nieuwe Statenzijl'], [])

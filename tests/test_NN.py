@@ -20,26 +20,26 @@ else:
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
-def plot(epochs, losses, val_losses, losses2, val_losses2):
+def plot(epochs, mses, val_mses, mses2, val_mses2):
     plt.figure()
-    plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
-    plt.plot(epochs, losses2, label='Training loss NN')
-    plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
+    plt.plot(epochs, mses, label='Training loss PINN')
+    plt.plot(epochs, mses2, label='Training loss NN')
+    plt.plot(epochs, val_mses, '--', label='Validation loss PINN')
+    plt.plot(epochs, val_mses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
-    plt.ylabel('MSE')
+    plt.ylabel('Loss')
     plt.legend()
     plt.show(block=False)
 
     plt.figure()
-    plt.plot(epochs, losses, label='Training loss PINN')
-    plt.plot(epochs, val_losses, '--', label='Validation loss PINN')
-    plt.plot(epochs, losses2, label='Training loss NN')
-    plt.plot(epochs, val_losses2, '--', label='Validation loss NN')
+    plt.plot(epochs, mses, label='Training loss PINN')
+    plt.plot(epochs, mses2, label='Training loss NN')
+    plt.plot(epochs, val_mses, '--', label='Validation loss PINN')
+    plt.plot(epochs, val_mses2, '--', label='Validation loss NN')
     plt.title('Loss of model after training')
     plt.xlabel('Epoch')
-    plt.ylabel('MSE')
+    plt.ylabel('Loss')
     plt.xscale('log')
     plt.yscale('log')
     plt.legend()
@@ -48,9 +48,9 @@ def plot(epochs, losses, val_losses, losses2, val_losses2):
 def plot_testing(model, model2, data):
     _, _, x_test, y_test = data
     plt.figure()
-    y_pred = model.predict(x_test)
+    y_pred = model.predict(x_test.to(device)).cpu()
     plt.scatter(y_test, y_pred, marker='.', label='PINN', alpha=0.2)
-    y_pred = model2.predict(x_test)
+    y_pred = model2.predict(x_test.to(device)).cpu()
     plt.scatter(y_test, y_pred, marker='.', label='NN', alpha=0.2)
     lst = [y_test.min(), y_test.max()]
     plt.plot(lst, lst, '--k')
@@ -80,41 +80,37 @@ def setup_enkf():
 
 def load_data(csv):
     df = pd.read_csv(csv, delimiter=';', header=None)
-    train = df.sample(frac=0.8)
+    train = df.sample(frac=0.9)
     test = df.drop(train.index)
-    # test = pd.read_csv(r'./tests/training_data/noisy_training_data.csv', delimiter=';', header=None)
 
-    # y_min = df.iloc[:,-1].min()
-    # y_max = df.iloc[:,-1].max()
+    x_train = torch.tensor(train.iloc[:,:-3].values, dtype=torch.float32)
+    y_train = torch.tensor(train.iloc[:,-3:].values, dtype=torch.float32).view(-1, 3)
 
-    x_train = torch.tensor(train.iloc[:,:-1].values, dtype=torch.float32)
-    y_train = torch.tensor(train.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
-
-    x_test = torch.tensor(test.iloc[:,:-1].values, dtype=torch.float32)
-    y_test = torch.tensor(test.iloc[:,-1].values, dtype=torch.float32).view(-1, 1)
+    x_test = torch.tensor(test.iloc[:,:-3].values, dtype=torch.float32)
+    y_test = torch.tensor(test.iloc[:,-3:].values, dtype=torch.float32).view(-1, 3)
     data = [x_train, y_train, x_test, y_test]
 
     return data
 
 def test():
-    data = load_data(r'./tests/training_data/noisy_training_data.csv')
+    data = load_data(r'./tests/training_data/training_data_space_dep.csv')
     enkf = setup_enkf()
 
-    layers =  [44, 20, 20, 20, 20, 20, 20, 20, 20, 1]
+    layers = [44, 10, 10, 10, 10, 3]
     model = PINN(device, layers, enkf, data)
     model.to(device)
-    # model.load_state_dict(torch.load('PINN.pth'))
+    # model.load_state_dict(torch.load('tests/PINNs/PINN_space_dep.pth'))
 
     print(model)
 
     ## Optimization ##
     optimizer = torch.optim.Adagrad(model.parameters())
     start_time = time.time()
-    epochs, losses, val_losses = model.train_model(optimizer, n_epochs=150, batch_size=32)
+    epochs, mses, val_mses = model.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed = time.time() - start_time
     print(f'Training time: {elapsed:.2f}')
 
-    # torch.save(model.state_dict(), 'PINN.pth')
+    # torch.save(model.state_dict(), 'tests/PINNs/PINN_space_dep.pth')
 
     ## NN ##
     model2 = NN(device, layers, enkf, data)
@@ -122,14 +118,14 @@ def test():
     print(model2)
     optimizer = torch.optim.Adagrad(model2.parameters())
     start_time = time.time()
-    _, losses2, val_losses2 = model2.train_model(optimizer, n_epochs=150, batch_size=32)
+    _, mses2, val_mses2 = model2.train_model(optimizer, n_epochs=150, batch_size=32)
     elapsed2 = time.time() - start_time
     print(f'Training time: {elapsed2:.2f}')
 
     plot_testing(model, model2, data)
-    plot(epochs, losses, val_losses, losses2, val_losses2)
+    plot(epochs, mses, val_mses, mses2, val_mses2)
 
-    assert losses[0] >= losses[-1] # PINN should have trained over time
+    assert mses[0] >= mses[-1] # PINN should have trained over time
 
 
 if __name__=='__main__':
