@@ -9,6 +9,7 @@ Created on Wed Oct 10 14:35:15 2018
 @author: hegeman
 """
 import math
+import logging
 import numpy as np
 from scipy.linalg import lu_factor
 from scipy.linalg import lu_solve
@@ -27,7 +28,7 @@ class DUDPrinter:
         :param message: String to print
         :return: none
         """
-        print(str(self.iter) + ":" + message)
+        logging.info(str(self.iter) + ":" + message)
 
     def set_iter(self, iteration):
         """
