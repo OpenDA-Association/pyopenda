@@ -17,7 +17,6 @@
 | Build                              | [![build](https://github.com/OpenDA-Association/pyopenda/actions/workflows/build.yml/badge.svg)](https://github.com/OpenDA-Association/pyopenda/actions/workflows/build.yml) |
 | Citation data consistency               | [![cffconvert](https://github.com/OpenDA-Association/pyopenda/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/OpenDA-Association/pyopenda/actions/workflows/cffconvert.yml) |
 | SonarCloud                         | [![sonarcloud](https://github.com/OpenDA-Association/pyopenda/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/OpenDA-Association/pyopenda/actions/workflows/sonarcloud.yml) |
-| MarkDown link checker              | [![markdown-link-check](https://github.com/OpenDA-Association/pyopenda/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/OpenDA-Association/pyopenda/actions/workflows/markdown-link-check.yml) |
 
 ## How to use openda
 
