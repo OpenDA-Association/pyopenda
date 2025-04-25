@@ -8,8 +8,8 @@ Created on Wed Oct 10 14:35:15 2018
 
 @author: hegeman
 """
-import math
 import logging
+import math
 import numpy as np
 from scipy.linalg import lu_factor
 from scipy.linalg import lu_solve
@@ -28,7 +28,8 @@ class DUDPrinter:
         :param message: String to print
         :return: none
         """
-        logging.info(str(self.iter) + ":" + message)
+        msg_log = f"{self.iter}:{message}"
+        logging.info(msg_log)
 
     def set_iter(self, iteration):
         """
@@ -211,7 +212,7 @@ def select_matrix_active(a, idx_row=None, idx_col=None):
             b[i, j] = a[idx_row[i], idx_col[j]]
     return b
 
-# pylint: disable=too-many-arguments,too-many-locals
+# pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
 def initialize_dud(func, p_old: MaskedParameters, obs, std, p_pert_m: MaskedParameters,
                    l_bound: MaskedParameters, u_bound: MaskedParameters):
     """
@@ -261,7 +262,7 @@ def initialize_dud(func, p_old: MaskedParameters, obs, std, p_pert_m: MaskedPara
     total_cost = params[-1, :]
     return parameters, func_evals, total_cost
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def find_next_params(printer, p, parameters, func_evals, obs, std):
     """
     Function used to find the next search direction.
@@ -315,7 +316,7 @@ def check_step_conv(printer, p_new, parameters, p_std, p_tol=1.0e-3):
         convergence = True
     return convergence
 
-# pylint: disable=too-many-arguments,too-many-locals
+# pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
 def max_step_p_new(printer, p_curr, p_new, l_bound, u_bound, alpha_min=1e-2):
     p_curr_act = p_curr.get_act()
     l_bound_act = l_bound.get_act()
@@ -385,7 +386,7 @@ def max_step_p_new(printer, p_curr, p_new, l_bound, u_bound, alpha_min=1e-2):
     p_corrected.set_act(p_corrected_active)
     return p_corrected, p_reinit
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def line_search(printer, func, parameters, total_cost, obs, std, p_new, alpha_min):
     """
     Line search that looks along the next search direction for parameters that lower the total cost.
@@ -432,7 +433,7 @@ def line_search(printer, func, parameters, total_cost, obs, std, p_new, alpha_mi
     return next_parameters, next_func_evals, next_total_cost, succes
 
 
-# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
+# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements,too-many-positional-arguments
 def dud(func, p_start, p_std, p_pert, obs, std, x_tol=1e-3, p_tol=1e-4, start_dist=1.1, l_bound=None, u_bound=None,
         max_iter=10, max_restart=1, alpha_min=0.1):
     """
