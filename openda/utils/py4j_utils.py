@@ -9,7 +9,6 @@ Created on Tue Nov 20 15:16:14 2018
 @author: hegeman
 """
 
-#import warnings
 import numpy as np
 import pandas as pd
 from py4j.java_collections import JavaArray
@@ -23,7 +22,6 @@ try:
     IObservationDescriptions_class = gateway.jvm.java.lang.Class.forName("org.openda.interfaces.IObservationDescriptions")
 except Exception:
     pass
-    #warnings.warn("Cannot connect to JVM did you start oda_py4j. Java building blocks cannot be used")
 
 
 def initialize_openda_configurable(openda_configurable, input_dir, config_xml):
