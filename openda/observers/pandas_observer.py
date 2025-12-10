@@ -148,29 +148,14 @@ class PandasObserver:
             config_file = config['config_file']
             labels = config['labels']
 
-            # if len(labels)!=1:
-            #    raise ValueError("Work in progress... only a single label is supported")
-
-            # Check existence of HDF5 file
-            hdf5_input = os.path.join(scriptdir, working_dir, config_file)
-            if not os.path.isfile(hdf5_input):
-                raise FileExistsError("We cannot find the hdf5 data file " + str(hdf5_input) +
+            # Check existence of csv-file
+            csv_input = os.path.join(scriptdir, working_dir, config_file)
+            if not os.path.isfile(csv_input):
+                raise FileExistsError("We cannot find the data file " + str(csv_input) +
                                       "\nNote: This file is not part of the repository you " +
                                       "must provide this file yourself")
 
-            # File can contain multiple pandas objects. Check whether proved store exists
-            # hdf5_data = None
-            # if False: #HDF5
-            #     stores = pd.HDFStore(hdf5_input, mode='r')
-            #     if store_name not in stores:
-            #         raise ValueError("selected store_name: " + str(store_name) +
-            #                          " does not exist in HDF5 file: " + str(hdf5_input))
-            #         # Read values
-            #         hdf5_data = pd.read_hdf(hdf5_input, key=store_name)
-            # else:
-            #     hdf5_data = pd.read_csv(hdf5_input, sep=';', header=0, index_col=0, parse_dates=["time"])
-
-            hdf5_data = pd.read_csv(hdf5_input, sep=';', header=0, index_col=0, parse_dates=["time"])
+            csv_data = pd.read_csv(csv_input, sep=';', header=0, index_col=0)
 
             self.all_timeseries = {}
             if "std" in config:
@@ -179,10 +164,10 @@ class PandasObserver:
                 std_obs = [1.0] * len(labels)
 
             for label, std in zip(labels, std_obs):
-                if label not in hdf5_data.columns:
-                    raise ValueError("provided label " + str(label) + " is not present in HDF data set")
+                if label not in csv_data.columns:
+                    raise ValueError("provided label " + str(label) + " is not present in data set")
 
-                column = pd.DataFrame(hdf5_data.loc[:, label])
+                column = pd.DataFrame(csv_data.loc[:, label])
                 column_clean = column.dropna()  # TODO
                 times = list(column_clean.index.values)
                 # column_clean.values is list of lists, hence make it flat
