@@ -26,5 +26,5 @@ docs/_build
 # virtual environments
 env
 env3
-venv
+*venv
 venv3
