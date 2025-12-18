@@ -155,7 +155,7 @@ class PandasObserver:
                                       "\nNote: This file is not part of the repository you " +
                                       "must provide this file yourself")
 
-            csv_data = pd.read_csv(csv_input, sep=';', header=0, index_col=0)
+            csv_data = pd.read_csv(csv_input, sep=';', header=0, index_col=0, parse_dates=["time"])
 
             self.all_timeseries = {}
             if "std" in config:
